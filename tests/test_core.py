@@ -1,15 +1,12 @@
 import pytest
 
-import shutil
-import os
-
-from deployict import Simulator as Sim
 from tests.test_interaction import g
+from tests.common import clean_tmp_folder, clean_containers
 
 
 @pytest.fixture()
 def s():
-    sim = g(Sim)
+    sim = g()
     logs = sim.deploy_nodes()
     return sim, logs
 
@@ -20,10 +17,5 @@ def test_number_of_containers(s):
 
 
 def teardown_function():
-    if os.path.isdir(Sim.TMP_FOLDER):
-        shutil.rmtree(Sim.TMP_FOLDER)
-
-    Sim.CLIENT.containers.prune()
-
-    for container in Sim.CLIENT.containers.list():
-        container.kill()
+    clean_tmp_folder()
+    clean_containers()

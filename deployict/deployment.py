@@ -33,13 +33,15 @@ class SimNodesCreator:
             client = self.CLIENT
 
         if command is None:
-            command = self.INIT_VALUES_FILE
+            command = []
+
+        command = [os.path.basename(wrapper), self.INIT_VALUES_FILE, *command]
 
         client.containers.run(
             image=image,
             name=node_name,
             volumes={os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}},
-            command=[os.path.basename(wrapper), command],
+            command=command,
             detach=True,
             auto_remove=True
         )
