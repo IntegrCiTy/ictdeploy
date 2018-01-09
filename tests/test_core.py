@@ -1,6 +1,7 @@
 import pytest
 
 import shutil
+import os
 
 from deployict import Simulator as Sim
 from tests.test_interaction import g
@@ -19,7 +20,8 @@ def test_number_of_containers(s):
 
 
 def teardown_function():
-    shutil.rmtree(Sim.TMP_FOLDER)
+    if os.path.isdir(Sim.TMP_FOLDER):
+        shutil.rmtree(Sim.TMP_FOLDER)
 
     Sim.CLIENT.containers.prune()
 

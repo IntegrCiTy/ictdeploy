@@ -10,6 +10,7 @@ from deployict.interactions import GraphCreator
 tests_folder = "tests"
 test_empty_file = "empty_file_for_testing_purpose.txt"
 test_wrapper_file = "wrapper_for_testing_purpose.py"
+command = "['init_values.json']"
 
 
 @pytest.fixture()
@@ -26,7 +27,7 @@ def g(simulator=GraphCreator):
         meta="SimpleHP",
         image="ict-python",
         wrapper=os.path.join(tests_folder, test_wrapper_file),
-        command=["init_values.json"],
+        command=command,
         files=[os.path.join(tests_folder, test_empty_file)])
 
     hps = {}
@@ -58,6 +59,13 @@ def test_number_of_created_links(g):
 def test_returned_nodes_is_a_data_frame(g):
     nodes, _ = g.data
     assert type(nodes) is pd.DataFrame
+
+
+def test_returned_nodes(g):
+    nodes, _ = g.data
+    for _, row in nodes.iterrows():
+        assert row["type"] == "fmuHP"
+        assert row["meta"] == "SimpleHP"
 
 
 def test_returned_links_is_a_data_frame(g):
