@@ -1,8 +1,11 @@
-from deployict.deployment import SimNodesCreator
-from deployict.interactions import GraphCreator
+from ictdeploy.deployment import SimNodesCreator
+from ictdeploy.interactions import GraphCreator
 
-# Todo: set up correctly logger
-# from deployict.logs import my_logger
+# TODO: set up correctly logger
+# from ictdeploy.logs import my_logger
+
+# TODO: Set up images and modify code to allow defining wrapper in cmd (entrypoint: python)
+# TODO: Create base python image with dedicated env
 
 
 class Simulator(GraphCreator, SimNodesCreator):

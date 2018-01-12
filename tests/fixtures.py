@@ -2,7 +2,7 @@ import pytest
 from os.path import join
 import numpy as np
 
-from deployict import Simulator as Sim
+from ictdeploy import Simulator as Sim
 from tests.common import tests_folder, files_folder, wraps_folder
 
 
@@ -10,6 +10,8 @@ wrap_cmd = "wrap_cmd.py"
 wrap_lsd = "wrap_listdir.py"
 cmd = ["aaa", "bbb"]
 file = "empty_file_for_testing_purpose.txt"
+
+image = "ict-base"
 
 
 @pytest.fixture()
@@ -26,7 +28,7 @@ def s_cmd():
     sim.add_type(
         name="fmuHP",
         meta="SimpleHP",
-        image="ict-python",
+        image=image,
         wrapper=join(tests_folder, wraps_folder, wrap_cmd),
         command=cmd,
         files=[join(tests_folder, files_folder, file)]
@@ -57,7 +59,7 @@ def s_lsd():
     sim.add_type(
         name="fmuHP",
         meta="SimpleHP",
-        image="ict-python",
+        image=image,
         wrapper=join(tests_folder, wraps_folder, wrap_lsd),
         command=None,
         files=[join(tests_folder, files_folder, file)]

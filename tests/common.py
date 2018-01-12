@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from deployict.deployment import SimNodesCreator as Sim
+from ictdeploy.deployment import SimNodesCreator as Sim
 
 tests_folder = "tests"
 files_folder = "files_to_add"

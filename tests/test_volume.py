@@ -2,7 +2,7 @@ import pytest
 
 import os
 
-from deployict import Simulator as Sim
+from ictdeploy import Simulator as Sim
 
 from tests.common import clean_tmp_folder
 from tests.common import tests_folder, files_folder, wraps_folder

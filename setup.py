@@ -3,13 +3,13 @@
 
 from setuptools import setup, find_packages
 
-import deployict
+import ictdeploy
 
 setup(
 
-    name='deployict',
+    name='ictdeploy',
 
-    version=deployict.__version__,
+    version=ictdeploy.__version__,
 
     packages=find_packages(),
 
