@@ -1,19 +1,37 @@
 from ictdeploy.deployment import SimNodesCreator
 from ictdeploy.interactions import GraphCreator
+import time
 
 # TODO: set up correctly logger
 # from ictdeploy.logs import my_logger
-
-# TODO: Set up images and modify code to allow defining wrapper in cmd (entrypoint: python)
-# TODO: Create base python image with dedicated env
 
 
 class Simulator(GraphCreator, SimNodesCreator):
     def __init__(self):
         super().__init__()
 
-    def deploy_aux(self):
-        pass
+    def deploy_aux(self, client=None):
+        if client is None:
+            client = self.CLIENT
+
+        client.containers.run('redis:alpine',
+                              name='ict-red',
+                              ports={'6379/tcp': 6379},
+                              detach=True,
+                              auto_remove=True)
+
+        client.containers.run('integrcity/rabbitmq',
+                              name='ict-rab',
+                              ports={'5672/tcp': 5672},
+                              detach=True,
+                              auto_remove=True)
+
+        time.sleep(2)
+
+        red_logs = client.containers.get("ict-red").logs(stream=True)
+        rab_logs = client.containers.get("ict-rab").logs(stream=True)
+
+        return {"ict-red": red_logs, "ict-rab": rab_logs}
 
     def deploy_nodes(self, client=None):
         logs = {}
