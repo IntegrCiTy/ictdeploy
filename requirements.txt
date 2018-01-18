@@ -1,0 +1,3 @@
+docker
+pandas
+networkx >= 2
