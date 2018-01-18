@@ -74,6 +74,28 @@ class GraphCreator:
             self.add_link(get_node, set_node, get_attr, set_attr, unit)
 
     @property
+    def interaction_graph(self):
+        nodes, links = self.data
+
+        inter = {
+            "nodes": {node: {
+                "inputs": row["to_set"],
+                "outputs": row["to_get"]
+            } for node, row in nodes.iterrows()},
+
+            "links": {"Link_{}".format(i): {
+                "out": {
+                    "node": link["get_node"],
+                    "attr": link["get_attr"]},
+                "in": {
+                    "node": link["set_node"],
+                    "attr": link["set_attr"]}
+            } for i, link in links.iterrows()}
+        }
+
+        return inter
+
+    @property
     def data(self):
         nodes_dict = {n.name: {
             "meta": self.types[n.type]["meta"],

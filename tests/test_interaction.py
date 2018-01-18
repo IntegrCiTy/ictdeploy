@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 
-
 from tests.fixtures import s_lsd
 
 
@@ -64,3 +63,24 @@ def test_returned_links_is_a_data_frame(g):
 
 def test_graph_is_a_multi_directed_graph(g):
     assert type(g._graph) is nx.MultiDiGraph
+
+
+def test_interaction_graph(g):
+
+    waited = {'links': {'Link_0': {'in': {'attr': 'a1', 'node': 'HP_0'},
+                                   'out': {'attr': 'b1', 'node': 'HP_2'}},
+                        'Link_1': {'in': {'attr': 'a2', 'node': 'HP_0'},
+                                   'out': {'attr': 'b2', 'node': 'HP_2'}},
+                        'Link_2': {'in': {'attr': 'a1', 'node': 'HP_1'},
+                                   'out': {'attr': 'b1', 'node': 'HP_0'}},
+                        'Link_3': {'in': {'attr': 'a2', 'node': 'HP_1'},
+                                   'out': {'attr': 'b2', 'node': 'HP_0'}},
+                        'Link_4': {'in': {'attr': 'a1', 'node': 'HP_2'},
+                                   'out': {'attr': 'b1', 'node': 'HP_1'}},
+                        'Link_5': {'in': {'attr': 'a2', 'node': 'HP_2'},
+                                   'out': {'attr': 'b2', 'node': 'HP_1'}}},
+              'nodes': {'HP_0': {'inputs': ['a1', 'a2'], 'outputs': ['b1', 'b2']},
+                        'HP_1': {'inputs': ['a1', 'a2'], 'outputs': ['b1', 'b2']},
+                        'HP_2': {'inputs': ['a1', 'a2'], 'outputs': ['b1', 'b2']}}}
+
+    assert g.interaction_graph == waited
