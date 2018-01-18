@@ -8,6 +8,7 @@ class SimNodesCreator:
     CLIENT = docker.from_env()
     TMP_FOLDER = "TMP_FOLDER"
     INIT_VALUES_FILE = 'init_values.json'
+    HOST = "172.17.01"
 
     def __init__(self):
         pass
@@ -35,7 +36,7 @@ class SimNodesCreator:
         if command is None:
             command = []
 
-        command = [os.path.basename(wrapper), self.INIT_VALUES_FILE, *command]
+        command = [os.path.basename(wrapper), self.HOST, node_name, self.INIT_VALUES_FILE, *command]
 
         client.containers.run(
             image=image,

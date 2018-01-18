@@ -5,7 +5,7 @@ from tests.fixtures import s_cmd, s_lsd
 def test_wrapper_received_command(s_cmd):
     sim = s_cmd
     logs = sim.deploy_nodes()
-    waited = "['init_values.json', 'aaa', 'bbb']"
+    waited = "['172.17.01', 'HP_0', 'init_values.json', 'aaa', 'bbb']"
     assert waited in get_logs(logs["HP_0"])
 
 
