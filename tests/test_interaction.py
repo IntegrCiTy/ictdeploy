@@ -11,6 +11,14 @@ from tests.fixtures import s_lsd
 def g():
     sim = s_lsd()
 
+    sim.add_node(
+        name="HP_0",
+        node_type="fmuHP",
+        init_values={
+            "p_nom": int(np.random.uniform(10, 500)),
+            "mode": np.random.choice(["cooling", "heating"])}
+    )
+
     hp1 = sim.add_node(
         name="HP_1",
         node_type="fmuHP",
@@ -66,21 +74,6 @@ def test_graph_is_a_multi_directed_graph(g):
 
 
 def test_interaction_graph(g):
-
-    waited = {'links': {'Link_0': {'in': {'attr': 'a1', 'node': 'HP_0'},
-                                   'out': {'attr': 'b1', 'node': 'HP_2'}},
-                        'Link_1': {'in': {'attr': 'a2', 'node': 'HP_0'},
-                                   'out': {'attr': 'b2', 'node': 'HP_2'}},
-                        'Link_2': {'in': {'attr': 'a1', 'node': 'HP_1'},
-                                   'out': {'attr': 'b1', 'node': 'HP_0'}},
-                        'Link_3': {'in': {'attr': 'a2', 'node': 'HP_1'},
-                                   'out': {'attr': 'b2', 'node': 'HP_0'}},
-                        'Link_4': {'in': {'attr': 'a1', 'node': 'HP_2'},
-                                   'out': {'attr': 'b1', 'node': 'HP_1'}},
-                        'Link_5': {'in': {'attr': 'a2', 'node': 'HP_2'},
-                                   'out': {'attr': 'b2', 'node': 'HP_1'}}},
-              'nodes': {'HP_0': {'inputs': ['a1', 'a2'], 'outputs': ['b1', 'b2']},
-                        'HP_1': {'inputs': ['a1', 'a2'], 'outputs': ['b1', 'b2']},
-                        'HP_2': {'inputs': ['a1', 'a2'], 'outputs': ['b1', 'b2']}}}
-
-    assert g.interaction_graph == waited
+    g_dict = g.interaction_graph
+    assert len(g_dict["links"]) == 6
+    assert len(g_dict["nodes"]) == 3

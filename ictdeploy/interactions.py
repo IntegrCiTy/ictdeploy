@@ -2,7 +2,7 @@ import networkx as nx
 import pandas as pd
 
 
-# TODO: find the WTF is going on with objects df
+# TODO: find the WTF is going on with objects df (cf. TestNetworkxNodeObject.ipynb)
 class Node:
     def __init__(self, name, node_type, init_values):
         self.name = name

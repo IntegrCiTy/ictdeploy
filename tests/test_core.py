@@ -28,8 +28,9 @@ def test_orchestrator_container(s_obnl):
     sim, aux_logs, orc_logs = s_obnl
     waited = "['empty_file_for_testing_purpose.txt', 'wrap_listdir.py', 'init_values.json']"
     for xxx in get_logs(orc_logs):
-        print("-->", xxx)
+        pass
     # assert waited in get_logs(orc_logs)
+    # TODO: create this test...
 
 
 def teardown_function():

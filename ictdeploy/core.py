@@ -17,6 +17,8 @@ class Simulator(GraphCreator, SimNodesCreator):
     def __init__(self):
         super().__init__()
 
+        self.sequence = []
+
     def deploy_aux(self, client=None):
         """Deploy Redis (results database) and RabbitMQ (communication) containers"""
         if client is None:
@@ -92,3 +94,14 @@ class Simulator(GraphCreator, SimNodesCreator):
                 client=client
             )
         return logs
+
+    def create_group(self, *nodes):
+        """Create group for simulation sequence verifying that none of the group's nodes are directly connected"""
+        nodes = [self._catch_node(n) for n in nodes]
+        h = self._graph.subgraph(nodes)
+        assert len(h.edges) == 0
+        return [n.name for n in nodes]
+
+    def create_sequence(self, *groups):
+        """Create simulation sequences"""
+        self.sequence = [g for g in groups]
