@@ -1,19 +1,19 @@
 import pytest
 
-from tests.test_interaction import g
+from tests.test_sequence import gg
 from tests.common import clean_tmp_folder, clean_containers, get_logs
 
 
 @pytest.fixture()
 def s():
-    sim = g()
+    sim = gg()
     logs = sim.deploy_nodes()
     return sim, logs
 
 
 @pytest.fixture()
 def s_obnl():
-    sim = g()
+    sim = gg()
     logs_aux = sim.deploy_aux()
     logs_orc = sim.deploy_orchestrator()
     return sim, logs_aux, logs_orc
@@ -24,13 +24,16 @@ def test_number_of_nodes_containers(s):
     assert len(logs) == 3
 
 
-def test_orchestrator_container(s_obnl):
+def test_orchestrator_container_connected(s_obnl):
     sim, aux_logs, orc_logs = s_obnl
-    waited = "['empty_file_for_testing_purpose.txt', 'wrap_listdir.py', 'init_values.json']"
-    for xxx in get_logs(orc_logs):
-        pass
-    # assert waited in get_logs(orc_logs)
-    # TODO: create this test...
+    printed_orc_logs = get_logs(orc_logs)
+
+    waited = {
+        0: "scheduler connected!",
+        1: "Waiting for connection...",
+    }
+    for key, value in waited.items():
+        assert value in printed_orc_logs[key]
 
 
 def teardown_function():
