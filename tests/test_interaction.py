@@ -11,14 +11,6 @@ from tests.fixtures import s_lsd
 def g():
     sim = s_lsd()
 
-    sim.add_node(
-        name="HP_0",
-        node_type="fmuHP",
-        init_values={
-            "p_nom": int(np.random.uniform(10, 500)),
-            "mode": np.random.choice(["cooling", "heating"])}
-    )
-
     hp1 = sim.add_node(
         name="HP_1",
         node_type="fmuHP",

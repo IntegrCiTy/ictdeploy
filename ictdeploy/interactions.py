@@ -6,6 +6,7 @@ import pandas as pd
 class Node:
     def __init__(self, name, node_type, init_values):
         self.name = name
+
         self.type = node_type
         self.init_values = init_values
 
