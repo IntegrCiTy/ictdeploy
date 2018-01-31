@@ -6,7 +6,8 @@ def test_wrapper_received_command(s_cmd):
     sim = s_cmd
     logs = sim.deploy_nodes()
     waited = "['172.17.01', 'HP_0', 'init_values.json', 'aaa', 'bbb']"
-    assert waited in get_logs(logs["HP_0"])
+    returned = get_logs(logs["HP_0"])
+    assert waited in returned
 
 
 def test_needed_files_are_in_container(s_lsd):
