@@ -1,9 +1,12 @@
 from ictdeploy.deployment import SimNodesCreator
 from ictdeploy.interactions import GraphCreator
 
+import numpy as np
+
 import time
 import json
 import os
+import shutil
 
 
 # TODO: set up correctly logger
@@ -13,16 +16,30 @@ import os
 class Simulator(GraphCreator, SimNodesCreator):
     SCE_JSON_FILE = "interaction_graph.json"
     RUN_JSON_FILE = "sequences_and_steps.json"
+    UNITS = {"seconds": 1, "minutes": 60, "hours": 3600}
 
     def __init__(self):
         super().__init__()
 
         self.sequence = []
+        self.steps = []
+
+    def _clean_all(self, client):
+        if os.path.isdir(self.TMP_FOLDER):
+            shutil.rmtree(self.TMP_FOLDER)
+
+        client.containers.prune()
+
+        for container in client.containers.list():
+            container.kill()
 
     def deploy_aux(self, client=None):
+
         """Deploy Redis (results database) and RabbitMQ (communication) containers"""
         if client is None:
             client = self.CLIENT
+
+        self._clean_all(client)
 
         client.containers.run(
             'redis:alpine',
@@ -57,7 +74,7 @@ class Simulator(GraphCreator, SimNodesCreator):
             json.dump(self.interaction_graph, fp)
 
         with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), 'w') as fp:
-            json.dump({}, fp)  # TODO: generate and pass real run.json instead of empty dict
+            json.dump({"steps": self.steps, "schedule": self.sequence}, fp)
 
         client.containers.run(
             'integrcity/orchestrator',
@@ -105,3 +122,7 @@ class Simulator(GraphCreator, SimNodesCreator):
     def create_sequence(self, *groups):
         """Create simulation sequences"""
         self.sequence = [g for g in groups]
+
+    def create_steps(self, steps, unit="seconds"):
+        steps = np.array(steps) * self.UNITS[unit]
+        self.steps = steps.tolist()
