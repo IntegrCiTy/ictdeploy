@@ -7,7 +7,7 @@ from tests.common import tests_folder, wraps_folder
 from tests.common import clean_tmp_folder, clean_containers, get_logs
 
 
-wrap_cmd = "wrap_new_cmd.py"
+wrap_cmd = "wrap_cmd.py"
 image = "ict-base"
 
 
@@ -26,7 +26,7 @@ def f():
         meta="SimpleHP",
         image=image,
         wrapper=join(tests_folder, wraps_folder, wrap_cmd),
-        command=None,
+        command="hp.fmu",
         files=[]
     )
 
@@ -54,6 +54,7 @@ def test_wrapper_received_command(f):
         "--o": ["b1", "b2"],
         "--version": False,
         "-h": False,
+        '--cmd': "hp.fmu",
         "<host>": "172.17.01",
         "<init>": "init_values.json",
         "<name>": "HP_0"

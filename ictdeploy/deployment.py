@@ -29,20 +29,29 @@ class SimNodesCreator:
 
         return node_folder
 
-    def deploy_node(self, node_name, image, node_folder, wrapper, command=None, client=None):
+    def deploy_node(self, node_name, image, node_folder, wrapper, to_set=None, to_get=None, client=None, command=None):
         if client is None:
             client = self.CLIENT
 
-        if command is None:
-            command = []
+        if to_set is None:
+            to_set = []
 
-        command = [os.path.basename(wrapper), self.HOST, node_name, self.INIT_VALUES_FILE, *command]
+        if to_get is None:
+            to_get = []
+
+        param_i = ["--i={}".format(p) for p in to_set]
+        param_o = ["--o={}".format(p) for p in to_get]
+
+        full_command = [os.path.basename(wrapper), self.HOST, node_name, self.INIT_VALUES_FILE, *param_i, *param_o]
+
+        if command:
+            full_command.append("--cmd={}".format(command))
 
         client.containers.run(
             image=image,
             name=node_name,
             volumes={os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}},
-            command=command,
+            command=full_command,
             detach=True,
             auto_remove=True
         )

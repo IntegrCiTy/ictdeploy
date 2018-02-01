@@ -8,7 +8,7 @@ from tests.common import tests_folder, files_folder, wraps_folder
 
 wrap_cmd = "wrap_cmd.py"
 wrap_lsd = "wrap_listdir.py"
-cmd = ["aaa", "bbb"]
+cmd = "aaa"
 file = "empty_file_for_testing_purpose.txt"
 
 image = "ict-base"

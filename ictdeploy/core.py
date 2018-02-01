@@ -94,6 +94,7 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         for node_name, row in nodes.iterrows():
             node_type = self.types[row["type"]]
+            node_meta = self.meta_models[node_type["meta"]]
 
             node_folder = self.create_volume(
                 node_name,
@@ -106,6 +107,8 @@ class Simulator(GraphCreator, SimNodesCreator):
                 node_name=node_name,
                 image=node_type["image"],
                 node_folder=node_folder,
+                to_set=node_meta["set_attrs"],
+                to_get=node_meta["get_attrs"],
                 wrapper=node_type["wrapper"],
                 command=node_type["command"],
                 client=client
