@@ -61,7 +61,7 @@ class GraphCreator:
         self._graph.add_node(node)
         return node
 
-    def add_link(self, get_node, set_node, get_attr, set_attr, unit):
+    def add_link(self, get_node, set_node, get_attr, set_attr, unit="unit"):
         self._graph.add_edge(
             self._catch_node(get_node),
             self._catch_node(set_node),
@@ -70,7 +70,9 @@ class GraphCreator:
             unit=unit
         )
 
-    def add_multiple_links_between_two_nodes(self, get_node, set_node, get_attrs, set_attrs, units):
+    def add_multiple_links_between_two_nodes(self, get_node, set_node, get_attrs, set_attrs, units=None):
+        if not units:
+            units = ["unit"] * len(get_attrs)
         for get_attr, set_attr, unit in zip(get_attrs, set_attrs, units):
             self.add_link(get_node, set_node, get_attr, set_attr, unit)
 
