@@ -13,7 +13,7 @@ def g():
 
     hp1 = sim.add_node(
         name="HP_1",
-        node_type="fmuHP",
+        model="fmuHP",
         init_values={
             "p_nom": int(np.random.uniform(10, 500)),
             "mode": np.random.choice(["cooling", "heating"])}
@@ -21,7 +21,7 @@ def g():
 
     hp2 = sim.add_node(
         name="HP_2",
-        node_type="fmuHP",
+        model="fmuHP",
         init_values={
             "p_nom": int(np.random.uniform(10, 500)),
             "mode": np.random.choice(["cooling", "heating"])}
@@ -35,30 +35,25 @@ def g():
 
 
 def test_number_of_created_nodes(g):
-    nodes, _ = g.data
-    assert len(nodes) == 3
+    assert len(g.nodes) == 3
 
 
 def test_number_of_created_links(g):
-    _, links = g.data
-    assert len(links) == 6
+    assert len(g.links) == 6
 
 
 def test_returned_nodes_is_a_data_frame(g):
-    nodes, _ = g.data
-    assert type(nodes) is pd.DataFrame
+    assert type(g.nodes) is pd.DataFrame
 
 
 def test_returned_nodes(g):
-    nodes, _ = g.data
-    for _, row in nodes.iterrows():
-        assert row["type"] == "fmuHP"
+    for _, row in g.nodes.iterrows():
+        assert row["model"] == "fmuHP"
         assert row["meta"] == "SimpleHP"
 
 
 def test_returned_links_is_a_data_frame(g):
-    _, links = g.data
-    assert type(links) is pd.DataFrame
+    assert type(g.links) is pd.DataFrame
 
 
 def test_graph_is_a_multi_directed_graph(g):

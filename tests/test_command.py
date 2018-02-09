@@ -21,7 +21,7 @@ def f():
         get_attrs=["b1", "b2"]
     )
 
-    sim.add_type(
+    sim.add_model(
         name="fmuHP",
         meta="SimpleHP",
         image=image,
@@ -32,7 +32,7 @@ def f():
 
     sim.add_node(
         name="HP_0",
-        node_type="fmuHP",
+        model="fmuHP",
         init_values={
             "p_nom": 100,
             "mode": "heating"}

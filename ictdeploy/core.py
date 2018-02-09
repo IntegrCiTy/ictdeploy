@@ -90,10 +90,10 @@ class Simulator(GraphCreator, SimNodesCreator):
         """Deploy and run simulation nodes containers"""
         logs = {}
 
-        nodes, _ = self.data
+        nodes = self.nodes
 
         for node_name, row in nodes.iterrows():
-            node_type = self.types[row["type"]]
+            node_type = self.models[row["model"]]
             node_meta = self.meta_models[node_type["meta"]]
 
             node_folder = self.create_volume(
@@ -117,10 +117,13 @@ class Simulator(GraphCreator, SimNodesCreator):
 
     def create_group(self, *nodes):
         """Create group for simulation sequence verifying that none of the group's nodes are directly connected"""
-        nodes = [self._catch_node(n) for n in nodes]
         h = self._graph.subgraph(nodes)
-        assert len(h.edges) == 0
-        return [n.name for n in nodes]
+        try:
+            assert len(h.edges) == 0
+        except AssertionError:
+            for get_node, set_node, _ in h.edges:
+                print("WARNING - A direct link exists from {} to {} !".format(get_node, set_node))
+        return nodes
 
     def create_sequence(self, *groups):
         """Create simulation sequences"""

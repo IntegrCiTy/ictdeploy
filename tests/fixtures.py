@@ -25,7 +25,7 @@ def s_cmd():
         get_attrs=["b1", "b2"]
     )
 
-    sim.add_type(
+    sim.add_model(
         name="fmuHP",
         meta="SimpleHP",
         image=image,
@@ -36,7 +36,7 @@ def s_cmd():
 
     sim.add_node(
         name="HP_0",
-        node_type="fmuHP",
+        model="fmuHP",
         init_values={
             "p_nom": int(np.random.uniform(10, 500)),
             "mode": np.random.choice(["cooling", "heating"])}
@@ -56,7 +56,7 @@ def s_lsd():
         get_attrs=["b1", "b2"]
     )
 
-    sim.add_type(
+    sim.add_model(
         name="fmuHP",
         meta="SimpleHP",
         image=image,
@@ -67,7 +67,7 @@ def s_lsd():
 
     sim.add_node(
         name="HP_0",
-        node_type="fmuHP",
+        model="fmuHP",
         init_values={
             "p_nom": int(np.random.uniform(10, 500)),
             "mode": np.random.choice(["cooling", "heating"])}
