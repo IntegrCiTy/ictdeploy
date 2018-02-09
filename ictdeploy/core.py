@@ -92,25 +92,19 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         nodes = self.nodes
 
-        for node_name, row in nodes.iterrows():
-            node_type = self.models[row["model"]]
-            node_meta = self.meta_models[node_type["meta"]]
+        for node_name, node in nodes.iterrows():
 
             node_folder = self.create_volume(
                 node_name,
-                row["init_values"],
-                node_type["wrapper"],
-                *node_type["files"]
+                node["init_values"],
+                node["wrapper"],
+                *node["files"]
             )
 
             logs[node_name] = self.deploy_node(
                 node_name=node_name,
-                image=node_type["image"],
+                node=node,
                 node_folder=node_folder,
-                to_set=node_meta["set_attrs"],
-                to_get=node_meta["get_attrs"],
-                wrapper=node_type["wrapper"],
-                command=node_type["command"],
                 client=client
             )
         return logs

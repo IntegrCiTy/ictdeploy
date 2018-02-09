@@ -33,6 +33,7 @@ def f():
     sim.add_node(
         name="HP_0",
         model="fmuHP",
+        is_first=True,
         init_values={
             "p_nom": 100,
             "mode": "heating"}
@@ -48,7 +49,7 @@ def test_wrapper_received_command(f):
     str_logs = ''.join(str(elem) for elem in logs)
 
     waited = {
-        "--first": False,
+        "--first": True,
         "--help": False,
         "--i": ["a1", "a2"],
         "--o": ["b1", "b2"],

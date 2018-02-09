@@ -29,26 +29,28 @@ class SimNodesCreator:
 
         return node_folder
 
-    def deploy_node(self, node_name, image, node_folder, wrapper, to_set=None, to_get=None, client=None, command=None):
+    def deploy_node(self, node_name, node, node_folder, client):
         if client is None:
             client = self.CLIENT
 
-        if to_set is None:
-            to_set = []
+        param_i = ["--i={}".format(p) for p in node["to_set"]]
+        param_o = ["--o={}".format(p) for p in node["to_get"]]
 
-        if to_get is None:
-            to_get = []
+        full_command = [
+            os.path.basename(node["wrapper"]),
+            self.HOST, node_name,
+            self.INIT_VALUES_FILE,
+            *param_i,
+            *param_o]
 
-        param_i = ["--i={}".format(p) for p in to_set]
-        param_o = ["--o={}".format(p) for p in to_get]
+        if node["is_first"]:
+            full_command.append("--first")
 
-        full_command = [os.path.basename(wrapper), self.HOST, node_name, self.INIT_VALUES_FILE, *param_i, *param_o]
-
-        if command:
-            full_command.append("--cmd={}".format(command))
+        if node["command"]:
+            full_command.append("--cmd={}".format(node["command"]))
 
         client.containers.run(
-            image=image,
+            image=node["image"],
             name=node_name,
             volumes={os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}},
             command=full_command,
