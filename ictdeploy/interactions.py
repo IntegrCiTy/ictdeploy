@@ -11,7 +11,7 @@ class Node:
         self.is_first = is_first
 
     def __repr__(self):
-        return str(self.name)
+        return str(self.model) + " -> " + str(self.init_values)
 
 
 def _empty_list_if_none(l):
