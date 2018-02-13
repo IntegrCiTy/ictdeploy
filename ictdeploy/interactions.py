@@ -1,5 +1,6 @@
 import networkx as nx
 import pandas as pd
+import logging
 
 
 class Node:
@@ -61,6 +62,7 @@ class GraphCreator:
             'set_attrs': _empty_list_if_none(set_attrs),
             'get_attrs': _empty_list_if_none(get_attrs)
         }
+        logging.info("Meta-model {} created.".format(name))
         return name
 
     def add_model(self, name, meta, image, wrapper, command, files):
@@ -71,6 +73,7 @@ class GraphCreator:
             'command': command,
             'files': files
         }
+        logging.info("Model {} created.".format(name))
         return name
 
     def add_node(self, name, model, init_values=None, is_first=False):
@@ -78,6 +81,7 @@ class GraphCreator:
             init_values = {}
         node = Node(name, model, init_values, is_first)
         self._graph.add_node(node.name, node=node)
+        logging.info("Node {} created.".format(name))
         return node.name
 
     def add_link(self, get_node, set_node, get_attr, set_attr, unit="unit"):
