@@ -93,8 +93,8 @@ class GraphCreator:
     def interaction_graph(self):
         return {
             "nodes": {node: {
-                "output": row["to_set"],
-                "input": row["to_get"]
+                "input": row["to_set"],
+                "output": row["to_get"]
             } for node, row in self.nodes.iterrows()},
 
             "links": [{

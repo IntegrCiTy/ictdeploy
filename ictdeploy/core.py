@@ -57,6 +57,7 @@ class Simulator(GraphCreator, SimNodesCreator):
         :param client: Docker client (default: from local environment)
         :return: a dict containing the logs of the Redis and the RabbitMQ containers as generators
         """
+
         if client is None:
             client = self.CLIENT
 
