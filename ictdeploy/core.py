@@ -25,6 +25,10 @@ class Simulator(GraphCreator, SimNodesCreator):
     RUN_JSON_FILE = "sequences_and_steps.json"
     UNITS = {"seconds": 1, "minutes": 60, "hours": 3600}
 
+    RABBITMQ_ADMIN_PASSWORD = "admin"
+    RABBITMQ_OBNL_PASSWORD = "obnl"
+    RABBITMQ_TOOL_PASSWORD = "tool"
+
     def __init__(self):
         super().__init__()
 
@@ -66,25 +70,30 @@ class Simulator(GraphCreator, SimNodesCreator):
             auto_remove=True)
 
         client.containers.run(
-            'integrcity/rabbitmq',
-            # "rabbitmq:alpine",
+            'ict-rabbitmq',
             name='ict-rab',
             ports={'5672/tcp': 5672},
+            environment={
+                'RABBITMQ_ADMIN_PASSWORD': self.RABBITMQ_ADMIN_PASSWORD,
+                'RABBITMQ_OBNL_PASSWORD': self.RABBITMQ_OBNL_PASSWORD,
+                'RABBITMQ_TOOL_PASSWORD': self.RABBITMQ_TOOL_PASSWORD,
+            },
             detach=True,
             auto_remove=True)
 
-        time.sleep(2)
+        time.sleep(10)
 
         red_logs = client.containers.get("ict-red").logs(stream=True)
         rab_logs = client.containers.get("ict-rab").logs(stream=True)
 
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
-    def deploy_orchestrator(self, client=None):
+    def deploy_orchestrator(self, simulation="demotest", client=None):
         """
         Deploy and configure the OBNL (orchestration) container
 
         :param client: Docker client (default: from local environment)
+        :param simulation:
         :return: logs of the OBNL container as generator
         """
         if client is None:
@@ -97,7 +106,7 @@ class Simulator(GraphCreator, SimNodesCreator):
             json.dump(self.interaction_graph, fp)
 
         with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), 'w') as fp:
-            json.dump({"steps": self.steps, "schedule": self.sequence}, fp)
+            json.dump({"steps": self.steps, "schedule": self.sequence, "simulation_name": simulation}, fp)
 
         with open(os.path.join(obnl_folder, self.CONFIG_FILE), 'w') as fp:
             json.dump(obnl_config, fp)
@@ -171,7 +180,7 @@ class Simulator(GraphCreator, SimNodesCreator):
         Create the simulation's steps
 
         :param steps: list of simulation time-steps to run
-        :param unit: time unit of steps
+        :param unit: time unit of steps (default: seconds)
         :return:
         """
         steps = np.array(steps) * self.UNITS[unit]

@@ -93,16 +93,16 @@ class GraphCreator:
     def interaction_graph(self):
         return {
             "nodes": {node: {
-                "inputs": row["to_set"],
-                "outputs": row["to_get"]
+                "output": row["to_set"],
+                "input": row["to_get"]
             } for node, row in self.nodes.iterrows()},
 
-            "links": {"Link_{}".format(i): {
-                "out": {
+            "links": [{
+                "output": {
                     "node": link["get_node"],
-                    "attr": link["get_attr"]},
-                "in": {
+                    "attribute": link["get_attr"]},
+                "input": {
                     "node": link["set_node"],
-                    "attr": link["set_attr"]}
-            } for i, link in self.links.iterrows()}
+                    "attribute": link["set_attr"]}
+            } for i, link in self.links.iterrows()]
         }
