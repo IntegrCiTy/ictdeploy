@@ -12,7 +12,7 @@ from ictdeploy.base_config import obnl_config
 
 
 # TODO: set up a correct logger
-# from ictdeploy.logs import my_logger
+import logging
 
 
 class Simulator(GraphCreator, SimNodesCreator):
@@ -164,7 +164,7 @@ class Simulator(GraphCreator, SimNodesCreator):
             assert len(h.edges) == 0
         except AssertionError:
             for get_node, set_node, _ in h.edges:
-                print("WARNING - A direct link exists from {} to {} !".format(get_node, set_node))
+                logging.warning("A direct link exists from {} to {} !".format(get_node, set_node))
         return nodes
 
     def create_sequence(self, *groups):
