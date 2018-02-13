@@ -50,6 +50,7 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         client.containers.run(
             'integrcity/rabbitmq',
+            # "rabbitmq:alpine",
             name='ict-rab',
             ports={'5672/tcp': 5672},
             detach=True,

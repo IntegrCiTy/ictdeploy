@@ -5,7 +5,7 @@ from tests.fixtures import s_lsd
 def test_needed_files_are_in_container(s_lsd):
     sim = s_lsd
     logs = sim.deploy_nodes()
-    waited = "['empty_file_for_testing_purpose.txt', 'wrap_listdir.py', 'init_values.json']"
+    waited = "['empty_file_for_testing_purpose.txt', 'wrap_listdir.py', 'init_values.json', 'config_file.json']"
     assert waited in get_logs(logs["HP_0"])
 
 

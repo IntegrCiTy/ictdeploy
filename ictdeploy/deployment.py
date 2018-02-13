@@ -8,7 +8,11 @@ class SimNodesCreator:
     CLIENT = docker.from_env()
     TMP_FOLDER = "TMP_FOLDER"
     INIT_VALUES_FILE = 'init_values.json'
+    CONFIG_FILE = "config_file.json"
     HOST = "172.17.01"
+
+    with open('ictdeploy/base_config.json') as base_config:
+        BASE_CONFIG = json.load(base_config)
 
     def __init__(self):
         pass
@@ -18,6 +22,14 @@ class SimNodesCreator:
         with open(init_json, 'w') as outfile:
             json.dump(init_values, outfile)
 
+    def _create_config_file(self, node_name, node_folder):
+        node_config = dict(self.BASE_CONFIG)
+        node_config["name"] = node_name
+
+        config_json = os.path.join(node_folder, self.CONFIG_FILE)
+        with open(config_json, 'w') as outfile:
+            json.dump(node_config, outfile)
+
     def create_volume(self, node_name, init_values, *files):
         node_folder = os.path.join(self.TMP_FOLDER, node_name)
         os.makedirs(node_folder)
@@ -26,6 +38,7 @@ class SimNodesCreator:
             shutil.copyfile(file, os.path.join(node_folder, os.path.basename(file)))
 
         self._create_init_values_file(node_folder, init_values)
+        self._create_config_file(node_name, node_folder)
 
         return node_folder
 

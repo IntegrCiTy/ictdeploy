@@ -27,7 +27,7 @@ def test_created_folder_exist(s):
 
 def test_added_files_exists(s):
     _, node_folder = s
-    waited = [file, wrap_lsd, Sim.INIT_VALUES_FILE]
+    waited = [file, wrap_lsd, Sim.INIT_VALUES_FILE, Sim.CONFIG_FILE]
     assert os.listdir(node_folder) == waited
 
 
