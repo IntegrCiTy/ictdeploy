@@ -1,4 +1,4 @@
-{
+base_config = {
   "name": "TO_BE_REPLACED",
   "queues": {
     "obnl.simulation.node.": "on_simulation",
@@ -15,6 +15,18 @@
       "binding": [
         "obnl.simulation.node.scheduler"
       ]
+    }
+  }
+}
+
+obnl_config = {
+  "name": "scheduler",
+  "queues": {
+    "obnl.simulation.node.": "on_simulation"
+  },
+  "exchanges":{
+    "obnl.simulation.node.": {
+      "binding": []
     }
   }
 }

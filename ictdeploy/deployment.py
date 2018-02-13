@@ -3,6 +3,8 @@ import json
 import os
 import shutil
 
+from ictdeploy.base_config import base_config
+
 
 class SimNodesCreator:
     CLIENT = docker.from_env()
@@ -11,8 +13,7 @@ class SimNodesCreator:
     CONFIG_FILE = "config_file.json"
     HOST = "172.17.01"
 
-    with open('ictdeploy/base_config.json') as base_config:
-        BASE_CONFIG = json.load(base_config)
+    BASE_CONFIG = base_config
 
     def __init__(self):
         pass

@@ -8,12 +8,19 @@ import json
 import os
 import shutil
 
+from ictdeploy.base_config import obnl_config
 
-# TODO: set up correctly logger
+
+# TODO: set up a correct logger
 # from ictdeploy.logs import my_logger
 
 
 class Simulator(GraphCreator, SimNodesCreator):
+
+    """
+    Main class to import for co-simulation running, it gathers all the useful methods.
+    """
+
     SCE_JSON_FILE = "interaction_graph.json"
     RUN_JSON_FILE = "sequences_and_steps.json"
     UNITS = {"seconds": 1, "minutes": 60, "hours": 3600}
@@ -25,6 +32,12 @@ class Simulator(GraphCreator, SimNodesCreator):
         self.steps = []
 
     def _clean_all(self, client):
+        """
+        Delete the temporary folder and kill all the existing containers
+
+        :param client: Docker client (default: from local environment)
+        :return:
+        """
         if os.path.isdir(self.TMP_FOLDER):
             shutil.rmtree(self.TMP_FOLDER)
 
@@ -34,8 +47,12 @@ class Simulator(GraphCreator, SimNodesCreator):
             container.kill()
 
     def deploy_aux(self, client=None):
+        """
+        Deploy the Redis (results database) and the RabbitMQ (communication) containers
 
-        """Deploy Redis (results database) and RabbitMQ (communication) containers"""
+        :param client: Docker client (default: from local environment)
+        :return: a dict containing the logs of the Redis and the RabbitMQ containers as generators
+        """
         if client is None:
             client = self.CLIENT
 
@@ -64,7 +81,12 @@ class Simulator(GraphCreator, SimNodesCreator):
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
     def deploy_orchestrator(self, client=None):
-        """Deploy and configure OBNL (orchestration) container"""
+        """
+        Deploy and configure the OBNL (orchestration) container
+
+        :param client: Docker client (default: from local environment)
+        :return: logs of the OBNL container as generator
+        """
         if client is None:
             client = self.CLIENT
 
@@ -77,10 +99,15 @@ class Simulator(GraphCreator, SimNodesCreator):
         with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), 'w') as fp:
             json.dump({"steps": self.steps, "schedule": self.sequence}, fp)
 
+        with open(os.path.join(obnl_folder, self.CONFIG_FILE), 'w') as fp:
+            json.dump(obnl_config, fp)
+
+        shutil.copyfile("server.py", os.path.join(obnl_folder, "server.py"))
+
         client.containers.run(
-            'integrcity/orchestrator',
+            'ict-obnl',
             name='ict-orch',
-            volumes={os.path.abspath(obnl_folder): {'bind': '/home/ictuser/work', 'mode': 'rw'}},
+            volumes={os.path.abspath(obnl_folder): {'bind': "/home/project", 'mode': 'rw'}},
             command='{} {} {}'.format(self.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
             detach=True,
             auto_remove=True)
@@ -88,7 +115,12 @@ class Simulator(GraphCreator, SimNodesCreator):
         return client.containers.get('ict-orch').logs(stream=True)
 
     def deploy_nodes(self, client=None):
-        """Deploy and run simulation nodes containers"""
+        """
+        Deploy and run the simulation nodes containers
+
+        :param client: Docker client (default: from local environment)
+        :return: a dict containing the logs of the nodes containers as generators
+        """
         logs = {}
 
         nodes = self.nodes
@@ -111,7 +143,12 @@ class Simulator(GraphCreator, SimNodesCreator):
         return logs
 
     def create_group(self, *nodes):
-        """Create group for simulation sequence verifying that none of the group's nodes are directly connected"""
+        """
+        Create a group for the simulation sequence verifying that none of the group's nodes are directly connected
+
+        :param nodes: some nodes names
+        :return: selected nodes names as a list
+        """
         h = self._graph.subgraph(nodes)
         try:
             assert len(h.edges) == 0
@@ -121,9 +158,21 @@ class Simulator(GraphCreator, SimNodesCreator):
         return nodes
 
     def create_sequence(self, *groups):
-        """Create simulation sequences"""
+        """
+        Create the simulation's sequence
+
+        :param groups: some groups as list of nodes (created by self.create_group)
+        :return:
+        """
         self.sequence = [g for g in groups]
 
     def create_steps(self, steps, unit="seconds"):
+        """
+        Create the simulation's steps
+
+        :param steps: list of simulation time-steps to run
+        :param unit: time unit of steps
+        :return:
+        """
         steps = np.array(steps) * self.UNITS[unit]
         self.steps = steps.tolist()
