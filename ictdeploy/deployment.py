@@ -2,6 +2,7 @@ import docker
 import json
 import os
 import shutil
+import logging
 
 from ictdeploy.base_config import base_config
 
@@ -71,5 +72,6 @@ class SimNodesCreator:
             detach=True,
             auto_remove=True
         )
+        logging.info("The node {} is deployed.".format(node_name))
 
         return client.containers.get(node_name).logs(stream=True)

@@ -8,6 +8,8 @@ import json
 import os
 import shutil
 
+import logging
+
 from ictdeploy.base_config import obnl_config
 
 
@@ -63,6 +65,7 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         self._clean_all(client)
 
+        logging.info("Running Redis DB container ...")
         client.containers.run(
             'redis:alpine',
             name='ict-red',
@@ -70,6 +73,7 @@ class Simulator(GraphCreator, SimNodesCreator):
             detach=True,
             auto_remove=True)
 
+        logging.info("Running RabbitMQ container ...")
         client.containers.run(
             'ict-rabbitmq',
             name='ict-rab',
@@ -86,6 +90,9 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         red_logs = client.containers.get("ict-red").logs(stream=True)
         rab_logs = client.containers.get("ict-rab").logs(stream=True)
+
+        logging.info("Redis DB container status:", client.containers.get("ict-red").status)
+        logging.info("RabbitMQ container status:", client.containers.get("ict-rab").status)
 
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
@@ -114,6 +121,7 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         shutil.copyfile("server.py", os.path.join(obnl_folder, "server.py"))
 
+        logging.info("Running OBNL container ...")
         client.containers.run(
             'ict-obnl',
             name='ict-orch',
@@ -121,6 +129,8 @@ class Simulator(GraphCreator, SimNodesCreator):
             command='{} {} {}'.format(self.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
             detach=True,
             auto_remove=True)
+
+        logging.info("OBNL container status:", client.containers.get("ict-orch").status)
 
         return client.containers.get('ict-orch').logs(stream=True)
 
@@ -162,6 +172,7 @@ class Simulator(GraphCreator, SimNodesCreator):
         h = self._graph.subgraph(nodes)
         try:
             assert len(h.edges) == 0
+            logging.info("The group {} have been created.".format(nodes))
         except AssertionError:
             for get_node, set_node, _ in h.edges:
                 logging.warning("A direct link exists from {} to {} !".format(get_node, set_node))
@@ -175,6 +186,7 @@ class Simulator(GraphCreator, SimNodesCreator):
         :return:
         """
         self.sequence = [g for g in groups]
+        logging.info("The sequence {} have been created.".format(self.sequence))
 
     def create_steps(self, steps, unit="seconds"):
         """
@@ -186,3 +198,4 @@ class Simulator(GraphCreator, SimNodesCreator):
         """
         steps = np.array(steps) * self.UNITS[unit]
         self.steps = steps.tolist()
+        logging.info("{} steps have been created.".format(len(steps)))
