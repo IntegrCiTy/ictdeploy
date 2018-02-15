@@ -44,7 +44,8 @@ class Simulator(GraphCreator, SimNodesCreator):
         client.containers.prune()
 
         for container in client.containers.list():
-            container.kill()
+            if "ict" in container.name:
+                container.kill()
 
     def deploy_aux(self, client=None):
         """
@@ -62,7 +63,7 @@ class Simulator(GraphCreator, SimNodesCreator):
         logging.info("Running Redis DB container ...")
         client.containers.run(
             'redis:alpine',
-            name='ict-red',
+            name='ict_red',
             ports={'6379/tcp': 6379},
             detach=True,
             auto_remove=True)
@@ -70,7 +71,7 @@ class Simulator(GraphCreator, SimNodesCreator):
         logging.info("Running RabbitMQ container ...")
         client.containers.run(
             'ict-rabbitmq',
-            name='ict-rab',
+            name='ict_rab',
             ports={'5672/tcp': 5672},
             environment={
                 'RABBITMQ_ADMIN_PASSWORD': self.RABBITMQ_ADMIN_PASSWORD,
@@ -82,11 +83,11 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         time.sleep(10)
 
-        red_logs = client.containers.get("ict-red").logs(stream=True)
-        rab_logs = client.containers.get("ict-rab").logs(stream=True)
+        red_logs = client.containers.get("ict_red").logs(stream=True)
+        rab_logs = client.containers.get("ict_rab").logs(stream=True)
 
-        logging.info("Redis DB container status:", client.containers.get("ict-red").status)
-        logging.info("RabbitMQ container status:", client.containers.get("ict-rab").status)
+        logging.info("Redis DB container status: {}".format(client.containers.get("ict_red").status))
+        logging.info("RabbitMQ container status: {}".format(client.containers.get("ict_rab").status))
 
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
@@ -118,15 +119,15 @@ class Simulator(GraphCreator, SimNodesCreator):
         logging.info("Running OBNL container ...")
         client.containers.run(
             'ict-obnl',
-            name='ict-orch',
+            name='ict_orch',
             volumes={os.path.abspath(obnl_folder): {'bind': "/home/project", 'mode': 'rw'}},
             command='{} {} {}'.format(self.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
             detach=True,
             auto_remove=True)
 
-        logging.info("OBNL container status:", client.containers.get("ict-orch").status)
+        logging.info("OBNL container status:", client.containers.get("ict_orch").status)
 
-        return client.containers.get('ict-orch').logs(stream=True)
+        return client.containers.get('ict_orch').logs(stream=True)
 
     def deploy_nodes(self, client=None):
         """

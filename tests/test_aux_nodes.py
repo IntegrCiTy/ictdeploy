@@ -19,8 +19,8 @@ def test_number_of_aux_containers(aux):
 def test_aux_containers_status(aux):
     sim, _ = aux
 
-    rab = sim.CLIENT.containers.get('ict-rab')
-    red = sim.CLIENT.containers.get('ict-red')
+    rab = sim.CLIENT.containers.get('ict_rab')
+    red = sim.CLIENT.containers.get('ict_red')
 
     assert rab.status == "running"
     assert red.status == "running"
