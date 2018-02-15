@@ -1,20 +1,14 @@
-from ictdeploy.deployment import SimNodesCreator
-from ictdeploy.interactions import GraphCreator
-
-import numpy as np
-
+import os
 import time
 import json
-import os
 import shutil
+import logging  # TODO: set up a correct logger
 
-import logging
-
+from ictdeploy.deployment import SimNodesCreator
+from ictdeploy.interactions import GraphCreator
 from ictdeploy.base_config import obnl_config
 
-
-# TODO: set up a correct logger
-import logging
+import numpy as np
 
 
 class Simulator(GraphCreator, SimNodesCreator):
