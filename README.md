@@ -5,6 +5,9 @@ It allows you to create simulation nodes, links, steps and running sequences.
 The description for creating wrappers with your tools can be found here (url) as well as examples.
 A full working demonstration of this package can be found here (url).
 
+The package relies mainly on [Docker-SDK](http://docker-py.readthedocs.io/en/stable/) a Python library for the Docker Engine API,
+on [Networkx](https://networkx.github.io/) and on [Pandas](https://pandas.pydata.org/).
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -32,7 +35,7 @@ Give the example
 And repeat
 
 ```
-until finished
+pip install -r requirements.txt
 ```
 
 End with an example of getting some data out of the system or using it for a little demo
@@ -56,28 +59,16 @@ pytest tests/test_command.py
 pytest tests/test_deployment.py
 ```
 
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+* [Docker-SDK](http://docker-py.readthedocs.io/en/stable/) - python interface for the Docker Engine API
+* [Networkx](https://networkx.github.io/) - manipulation of graph and network
+* [Pandas](https://pandas.pydata.org/) - data structures and data analysis tools
+* [OBNL](https://github.com/IntegrCiTy/obnl) - co-simulation orchestrator
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Pablo Puerto** - *Initial work*
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
