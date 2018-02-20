@@ -41,6 +41,14 @@ def test_interaction_graph(fix_create):
     assert len(g_dict["nodes"]) == 2
 
 
+def test_steps(fix_create):
+    assert fix_create.steps == [60, 60, 60, 60, 60, 60, 60, 60, 60, 60]
+
+
+def test_sequence(fix_create):
+    assert fix_create.sequence == [('Base0',), ('Base1',)]
+
+
 def test_tmp_folder_is_created(fix_volume):
     assert os.path.isdir(fix_volume.TMP_FOLDER)
 
@@ -69,11 +77,6 @@ def test_node_config_file(fix_volume):
         assert {"name", "queues", "exchanges"}.issubset(config_file)
         assert {"obnl.simulation.node.", "obnl.local.node.", "obnl.data.node."}.issubset(config_file["queues"])
         assert {"obnl.simulation.node.", "obnl.local.node."}.issubset(config_file["exchanges"])
-
-
-def test_obnl_folder(fix_volume):
-    files = []
-    assert True
 
 
 def teardown_function():

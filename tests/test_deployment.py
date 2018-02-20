@@ -1,5 +1,13 @@
+import os
+
 from tests.common import clean_tmp_folder, clean_containers, get_logs
 from tests.fixtures_test import fix_deploy
+
+
+def test_obnl_folder(fix_deploy):
+    sim, _, _, _ = fix_deploy
+    files = ['interaction_graph.json', 'sequences_and_steps.json', 'config_file.json', 'server.py']
+    assert os.listdir(os.path.join(sim.TMP_FOLDER, "obnl_folder")) == files
 
 
 def test_simulation_run(fix_deploy):
