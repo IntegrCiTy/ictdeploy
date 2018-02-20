@@ -67,7 +67,7 @@ def fix_deploy():
     sim = fix_create()
 
     logs_aux = sim.deploy_aux()
-    logs_orc = sim.deploy_orchestrator()
+    logs_orc = sim.deploy_orchestrator(server=os.path.join("tests", "server.py"))
     logs = sim.deploy_nodes()
 
-    return logs_aux, logs_orc, logs
+    return sim, logs_aux, logs_orc, logs

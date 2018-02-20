@@ -62,13 +62,18 @@ def test_init_values(fix_volume):
         assert "c" in init_values
 
 
-def test_config_file(fix_volume):
+def test_node_config_file(fix_volume):
     for node in fix_volume.nodes.index:
         with open(os.path.join(fix_volume.TMP_FOLDER, node, "config_file.json")) as json_data:
             config_file = json.load(json_data)
         assert {"name", "queues", "exchanges"}.issubset(config_file)
         assert {"obnl.simulation.node.", "obnl.local.node.", "obnl.data.node."}.issubset(config_file["queues"])
         assert {"obnl.simulation.node.", "obnl.local.node."}.issubset(config_file["exchanges"])
+
+
+def test_obnl_folder(fix_volume):
+    files = []
+    assert True
 
 
 def teardown_function():

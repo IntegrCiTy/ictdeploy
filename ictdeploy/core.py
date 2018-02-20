@@ -91,10 +91,11 @@ class Simulator(GraphCreator, SimNodesCreator):
 
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
-    def deploy_orchestrator(self, simulation="demotest", client=None):
+    def deploy_orchestrator(self, simulation="demotest", client=None, server="server.py"):
         """
         Deploy and configure the OBNL (orchestration) container
 
+        :param server: python script that run OBNL
         :param client: Docker client (default: from local environment)
         :param simulation:
         :return: logs of the OBNL container as generator
@@ -114,7 +115,7 @@ class Simulator(GraphCreator, SimNodesCreator):
         with open(os.path.join(obnl_folder, self.CONFIG_FILE), 'w') as fp:
             json.dump(obnl_config, fp)
 
-        shutil.copyfile("server.py", os.path.join(obnl_folder, "server.py"))
+        shutil.copyfile(server, os.path.join(obnl_folder, "server.py"))
 
         logging.info("Running OBNL container ...")
         client.containers.run(
@@ -125,7 +126,7 @@ class Simulator(GraphCreator, SimNodesCreator):
             detach=True,
             auto_remove=True)
 
-        logging.info("OBNL container status:", client.containers.get("ict_orch").status)
+        logging.info("OBNL container status: {}".format(client.containers.get("ict_orch").status))
 
         return client.containers.get('ict_orch').logs(stream=True)
 
