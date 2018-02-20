@@ -21,7 +21,7 @@ setup(
 
     long_description=open('README.md').read(),
 
-    install_requires=["pandas", "networkx >= 2", "docker"],
+    install_requires=["pandas", "networkx >= 2", "docker", "docopt"],
 
     include_package_data=True,
 
