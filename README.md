@@ -71,7 +71,9 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+You should have received a copy of the Apache License Version 2.0 along with this program.
+If not, see http://www.apache.org/licenses/LICENSE-2.0.
+See the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
