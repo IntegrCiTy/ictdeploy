@@ -15,9 +15,9 @@ setup(
 
     author="Pablo Puerto",
 
-    author_email="pablito.73@hotmail.fr",
+    author_email="pablo.puerto@mines-albi.fr",
 
-    description="help for multiple container deployment with specific environment",
+    description="Multiple containers deployment with specific environment and orchestration",
 
     long_description=open('README.md').read(),
 
@@ -31,7 +31,7 @@ setup(
         "Natural Language :: English",
         "Operating GraphCreator :: OS Independent",
         "Programming Language :: Python :: 3.5",
-        "Topic :: Docker deployment",
+        "Topic :: Docker deployment for co-simulation",
     ]
 
 )
