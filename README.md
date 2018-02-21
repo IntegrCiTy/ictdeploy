@@ -23,10 +23,22 @@ Docker Community-edition (https://www.docker.com/community-edition)
 
 A step by step series of examples that tell you have to get a development env running
 
-Say what the step will be
+Install virtualenv (if not already done) (More info on [virtualenv](https://virtualenv.pypa.io/en/stable/installation/))
 
 ```
-Give the example
+pip install virtualenv
+```
+
+Create a Python 3.5 virtual env
+
+```
+virtualenv -p python3 ict
+```
+
+Activate the created virtual env (ict)
+
+```
+source link/to/ict/bin/activate
 ```
 
 And repeat
