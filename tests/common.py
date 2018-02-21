@@ -17,7 +17,18 @@ def clean_containers(containers=Sim.CLIENT.containers):
     containers.prune()
 
     for container in containers.list():
-        container.kill()
+        if "ict" in container.name:
+            try:
+                container.stop()
+            except:
+                pass
+
+    for container in containers.list():
+        if "ict" in container.name:
+            try:
+                container.kill()
+            except:
+                pass
 
 
 def get_logs(logs):
