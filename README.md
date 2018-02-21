@@ -73,7 +73,6 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 You should have received a copy of the Apache License Version 2.0 along with this program.
 If not, see http://www.apache.org/licenses/LICENSE-2.0.
-See the [LICENSE](LICENSE) file for details
 
 ## Acknowledgments
 
