@@ -2,13 +2,19 @@ import docker
 import json
 import os
 import shutil
+import logging
+
+from ictdeploy.base_config import base_config
 
 
 class SimNodesCreator:
     CLIENT = docker.from_env()
     TMP_FOLDER = "TMP_FOLDER"
     INIT_VALUES_FILE = 'init_values.json'
+    CONFIG_FILE = "config_file.json"
     HOST = "172.17.01"
+
+    BASE_CONFIG = base_config
 
     def __init__(self):
         pass
@@ -18,6 +24,14 @@ class SimNodesCreator:
         with open(init_json, 'w') as outfile:
             json.dump(init_values, outfile)
 
+    def _create_config_file(self, node_name, node_folder):
+        node_config = dict(self.BASE_CONFIG)
+        node_config["name"] = node_name
+
+        config_json = os.path.join(node_folder, self.CONFIG_FILE)
+        with open(config_json, 'w') as outfile:
+            json.dump(node_config, outfile)
+
     def create_volume(self, node_name, init_values, *files):
         node_folder = os.path.join(self.TMP_FOLDER, node_name)
         os.makedirs(node_folder)
@@ -26,25 +40,38 @@ class SimNodesCreator:
             shutil.copyfile(file, os.path.join(node_folder, os.path.basename(file)))
 
         self._create_init_values_file(node_folder, init_values)
+        self._create_config_file(node_name, node_folder)
 
         return node_folder
 
-    def deploy_node(self, node_name, image, node_folder, wrapper, command=None, client=None):
+    def deploy_node(self, node_name, node, node_folder, client):
         if client is None:
             client = self.CLIENT
 
-        if command is None:
-            command = []
+        param_i = ["--i={}".format(p) for p in node["to_set"]]
+        param_o = ["--o={}".format(p) for p in node["to_get"]]
 
-        command = [os.path.basename(wrapper), self.HOST, node_name, self.INIT_VALUES_FILE, *command]
+        full_command = [
+            os.path.basename(node["wrapper"]),
+            self.HOST, node_name,
+            self.INIT_VALUES_FILE,
+            *param_i,
+            *param_o]
+
+        if node["is_first"]:
+            full_command.append("--first")
+
+        if node["command"]:
+            full_command.append("--cmd={}".format(node["command"]))
 
         client.containers.run(
-            image=image,
+            image=node["image"],
             name=node_name,
             volumes={os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}},
-            command=command,
+            command=full_command,
             detach=True,
             auto_remove=True
         )
+        logging.info("The node {} is deployed.".format(node_name))
 
         return client.containers.get(node_name).logs(stream=True)
