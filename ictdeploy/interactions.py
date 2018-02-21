@@ -93,6 +93,9 @@ class GraphCreator:
         for get_attr, set_attr, unit in zip(get_attrs, set_attrs, units):
             self.add_link(get_node, set_node, get_attr, set_attr, unit)
 
+    def reset_graph(self):
+        self._graph = nx.MultiDiGraph()
+
     @property
     def interaction_graph(self):
         return {

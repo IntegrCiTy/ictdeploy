@@ -5,9 +5,6 @@ It allows you to create simulation nodes, links, steps and running sequences.
 The description for creating wrappers with your tools can be found here (url) as well as examples.
 A full working demonstration of this package can be found here (url).
 
-The package relies mainly on [Docker-SDK](http://docker-py.readthedocs.io/en/stable/) a Python library for the Docker Engine API,
-on [Networkx](https://networkx.github.io/) and on [Pandas](https://pandas.pydata.org/).
-
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
