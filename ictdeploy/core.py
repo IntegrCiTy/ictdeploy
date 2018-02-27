@@ -6,12 +6,13 @@ import logging  # TODO: set up a correct logger
 
 from ictdeploy.deployment import SimNodesCreator
 from ictdeploy.interactions import GraphCreator
+from ictdeploy.results import SimResultsGetter
 from ictdeploy.base_config import obnl_config
 
 import numpy as np
 
 
-class Simulator(GraphCreator, SimNodesCreator):
+class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
 
     """
     Main class to import for co-simulation running, it gathers all the useful methods.
