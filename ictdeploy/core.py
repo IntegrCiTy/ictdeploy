@@ -83,6 +83,9 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
             auto_remove=True)
 
         time.sleep(10)
+        # TODO: find a way to run ASAP a remove this "time.sleep(10)"
+        # while client.containers.get("ict_rab").status != "running":
+        #     time.sleep(0.1)
 
         red_logs = client.containers.get("ict_red").logs(stream=True)
         rab_logs = client.containers.get("ict_rab").logs(stream=True)
@@ -92,6 +95,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
 
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
+    # TODO: test deploying multiple simulation (access to results DB and without shutting down RabbitMQ)
     def deploy_orchestrator(self, simulation="demotest", client=None, server="server.py"):
         """
         Deploy and configure the OBNL (orchestration) container
