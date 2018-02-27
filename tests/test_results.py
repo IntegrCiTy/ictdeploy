@@ -6,7 +6,7 @@ from tests.fixtures_test import fix_deploy
 
 def test_list_of_available_results(fix_deploy):
     sim, logs_aux, logs_orc, logs = fix_deploy
-    sim.connect_to_db()
+    sim.connect_to_results_db()
     df = sim.list_of_available_results
     assert type(df) == pd.DataFrame
     assert set(list(df.columns)) == {'Node', 'IN/OUT', 'Attribute'}
