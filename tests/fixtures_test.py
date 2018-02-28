@@ -16,7 +16,7 @@ def fix_create():
     sim.add_model(
         name="BaseModel",
         meta="BaseMeta",
-        image="ict-simple",
+        image="integrcity/ict-simple",
         wrapper=os.path.join("tests", "wrappers", "base_wrap.py"),
         command=None,
         files=[os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")]

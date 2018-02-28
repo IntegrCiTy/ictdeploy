@@ -29,7 +29,7 @@ def test_returned_nodes(fix_create):
         assert row["meta"] == "BaseMeta"
         assert row["to_set"] == ["a"]
         assert row["to_get"] == ["b"]
-        assert row["image"] == "ict-simple"
+        assert row["image"] == "integrcity/ict-simple"
         assert row["wrapper"] == os.path.join("tests", "wrappers", "base_wrap.py")
         assert row["files"] == [os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")]
         assert row["command"] is None

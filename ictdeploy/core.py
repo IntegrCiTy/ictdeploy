@@ -71,7 +71,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
 
         logging.info("Running RabbitMQ container ...")
         client.containers.run(
-            'ict-rabbitmq',
+            'integrcity/ict-rabbitmq',
             name='ict_rab',
             ports={'5672/tcp': 5672},
             environment={
@@ -82,8 +82,18 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
             detach=True,
             auto_remove=True)
 
+        # logs_rab = client.containers.get("ict_rab").logs(stream=True)
+
+        # x = ""
+
+        # while "setup completed" not in x:
+        #     try:
+        #         x = logs_rab.__next__().decode("utf-8").rstrip()
+        #     except StopIteration:
+        #         break
+
         time.sleep(10)
-        # TODO: find a way to run ASAP a remove this "time.sleep(10)"
+        # TODO: find a way to run ASAP and remove the "time.sleep(10)"
         # while client.containers.get("ict_rab").status != "running":
         #     time.sleep(0.1)
 
@@ -124,7 +134,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
 
         logging.info("Running OBNL container ...")
         client.containers.run(
-            'ict-obnl',
+            'integrcity/ict-obnl',
             name='ict_orch',
             volumes={os.path.abspath(obnl_folder): {'bind': "/home/project", 'mode': 'rw'}},
             command='{} {} {}'.format(self.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
