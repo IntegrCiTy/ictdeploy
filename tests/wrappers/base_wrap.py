@@ -55,9 +55,11 @@ class Node(ClientNode):
         logging.debug(self.name, 'current_time', current_time - time_step)
         logging.debug(self.name, 'inputs', self.input_values)
 
-        # Update input attributes
+        # Update input attributes and save input attributes and corresponding simulation time step to Redis DB
         for key, value in self.input_values.items():
             setattr(self, key, value)
+            self.redis.rpush('IN_' + self.name + '_' + key, getattr(self, key))
+            self.redis.rpush('IN_' + self.name + '_' + key + '_time', current_time)
 
         # Compute intern state
         logging.debug(self.name, "compute new intern state")

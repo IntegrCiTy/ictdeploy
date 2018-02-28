@@ -82,20 +82,15 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
             detach=True,
             auto_remove=True)
 
-        # logs_rab = client.containers.get("ict_rab").logs(stream=True)
+        logs_rab = client.containers.get("ict_rab").logs(stream=True)
 
-        # x = ""
+        x = ""
 
-        # while "setup completed" not in x:
-        #     try:
-        #         x = logs_rab.__next__().decode("utf-8").rstrip()
-        #     except StopIteration:
-        #         break
-
-        time.sleep(10)
-        # TODO: find a way to run ASAP and remove the "time.sleep(10)"
-        # while client.containers.get("ict_rab").status != "running":
-        #     time.sleep(0.1)
+        while "setup completed" not in x:
+            try:
+                x = logs_rab.__next__().decode("utf-8").rstrip()
+            except StopIteration:
+                break
 
         red_logs = client.containers.get("ict_red").logs(stream=True)
         rab_logs = client.containers.get("ict_rab").logs(stream=True)
