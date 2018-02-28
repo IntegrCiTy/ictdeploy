@@ -20,11 +20,25 @@ class SimNodesCreator:
         pass
 
     def _create_init_values_file(self, node_folder, init_values):
+        """
+        Create the json file containing the initial values to be set in the node's model
+
+        :param node_folder: the local path of the node's folder
+        :param init_values: a dict mapping the initial values to the parameters names
+        :return: nothing :)
+        """
         init_json = os.path.join(node_folder, self.INIT_VALUES_FILE)
         with open(init_json, 'w') as outfile:
             json.dump(init_values, outfile)
 
     def _create_config_file(self, node_name, node_folder):
+        """
+        Create the configuration file necessary for the RabbitMQ communication and the Protobuf protocol
+
+        :param node_name: well... the name of the node
+        :param node_folder: the local path of the node's folder
+        :return: nothing :)
+        """
         node_config = dict(self.BASE_CONFIG)
         node_config["name"] = node_name
 
@@ -33,6 +47,14 @@ class SimNodesCreator:
             json.dump(node_config, outfile)
 
     def create_volume(self, node_name, init_values, *files):
+        """
+        Create the local folder that will be "synchronized" with / mounted into the container
+
+        :param node_name: well... the name of the node
+        :param init_values: a dict mapping the initial values to the parameters names
+        :param files: bunch of files that need to be added to the container for running the wrapper
+        :return: the local path of the node's folder
+        """
         node_folder = os.path.join(self.TMP_FOLDER, node_name)
         os.makedirs(node_folder)
 
@@ -45,12 +67,23 @@ class SimNodesCreator:
         return node_folder
 
     def deploy_node(self, node_name, node, node_folder, client):
+        """
+
+
+        :param node_name: well... the name of the node
+        :param node: a dict mapping all the necessary information to run the node (image, wrapper, etc.)
+        :param node_folder: the local path of the node's folder
+        :param client: the Docker client
+        :return: a generator giving access to the node's logs
+        """
         if client is None:
             client = self.CLIENT
 
+        # Create specific command for input and output parameters
         param_i = ["--i={}".format(p) for p in node["to_set"]]
         param_o = ["--o={}".format(p) for p in node["to_get"]]
 
+        # Build the command with the wrapper, the host, the name of the files with the initial values and the parameters
         full_command = [
             os.path.basename(node["wrapper"]),
             self.HOST, node_name,
@@ -58,12 +91,15 @@ class SimNodesCreator:
             *param_i,
             *param_o]
 
+        # Add the "--first" option if the node is in the first group of the sequence
         if node["is_first"]:
             full_command.append("--first")
 
+        # Add additional command
         if node["command"]:
             full_command.append("--cmd={}".format(node["command"]))
 
+        # Run the container with the Docker API
         client.containers.run(
             image=node["image"],
             name=node_name,

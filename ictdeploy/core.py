@@ -1,5 +1,4 @@
 import os
-import time
 import json
 import shutil
 import logging  # TODO: set up a correct logger
@@ -37,7 +36,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
         Delete the temporary folder and kill all the existing containers
 
         :param client: Docker client (default: from local environment)
-        :return:
+        :return: nothing :)
         """
         if os.path.isdir(self.TMP_FOLDER):
             shutil.rmtree(self.TMP_FOLDER)
@@ -189,7 +188,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
         Create the simulation's sequence
 
         :param groups: some groups as list of nodes (created by self.create_group)
-        :return:
+        :return: nothing :)
         """
         self.sequence = [g for g in groups]
         logging.info("The sequence {} have been created.".format(self.sequence))
@@ -200,7 +199,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
 
         :param steps: list of simulation time-steps to run
         :param unit: time unit of steps (default: seconds)
-        :return:
+        :return: nothing :)
         """
         steps = np.array(steps) * self.UNITS[unit]
         self.steps = steps.tolist()
