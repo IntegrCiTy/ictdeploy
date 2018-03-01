@@ -7,7 +7,7 @@ from docopt import docopt
 from obnl.core.client import ClientNode
 
 
-
+# This doc is used by docopt to make the wrapper callable by command line and gather easily all the given parameters
 doc = """>>> IntegrCiTy wrapper command <<<
 
 Usage:
@@ -27,6 +27,9 @@ Options
 
 
 class Node(ClientNode):
+    """
+    Node class for the wrapper (model can be called by the container or can be self contained directly in the wrapper)
+    """
     def __init__(self, host, input_attributes=None, output_attributes=None, is_first=False):
         # Implement OBNL client node
         super(Node, self).__init__(host, 'obnl_vhost', 'obnl', 'obnl', 'config_file.json',
@@ -50,6 +53,13 @@ class Node(ClientNode):
             setattr(self, key, val)
 
     def step(self, current_time, time_step):
+        """
+        Run a step for the wrapper/model
+
+        :param current_time: current simulation time
+        :param time_step: next time step to run
+        :return: nothing :)
+        """
         logging.debug('----- ' + self.name + ' -----')
         logging.debug(self.name, 'time_step', time_step, "s")
         logging.debug(self.name, 'current_time', current_time - time_step)

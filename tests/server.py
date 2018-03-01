@@ -4,6 +4,7 @@ from docopt import docopt
 
 from obnl.core.impl.server import Scheduler
 
+# This doc is used by docopt to make the server callable by command line and gather easily all the given parameters
 doc = """>>> IntegrCiTy obnl command <<<
 
 Usage:

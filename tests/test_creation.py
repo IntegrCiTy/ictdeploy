@@ -15,15 +15,15 @@ def test_graph_is_a_multi_directed_graph(fix_create):
     assert type(fix_create._graph) is nx.MultiDiGraph
 
 
-def test_number_of_created_nodes(fix_create):
+def test_number_of_created_nodes_is_correct(fix_create):
     assert len(fix_create.nodes) == 2
 
 
-def test_number_of_created_links(fix_create):
+def test_number_of_created_links_is_correct(fix_create):
     assert len(fix_create.links) == 2
 
 
-def test_returned_nodes(fix_create):
+def test_returned_nodes_are_meaningful(fix_create):
     for _, row in fix_create.nodes.iterrows():
         assert row["model"] == "BaseModel"
         assert row["meta"] == "BaseMeta"
@@ -35,17 +35,17 @@ def test_returned_nodes(fix_create):
         assert row["command"] is None
 
 
-def test_interaction_graph(fix_create):
+def test_interaction_graph_links_and_nodes_number(fix_create):
     g_dict = fix_create.interaction_graph
     assert len(g_dict["links"]) == 2
     assert len(g_dict["nodes"]) == 2
 
 
-def test_steps(fix_create):
+def test_steps_are_well_defined(fix_create):
     assert fix_create.steps == [60, 60, 60, 60, 60, 60, 60, 60, 60, 60]
 
 
-def test_sequence(fix_create):
+def test_sequence_is_well_defined(fix_create):
     assert fix_create.sequence == [('Base0',), ('Base1',)]
 
 
@@ -63,14 +63,14 @@ def test_basic_files_are_in_nodes_folders(fix_volume):
         assert os.listdir(os.path.join(fix_volume.TMP_FOLDER, node)) == files
 
 
-def test_init_values(fix_volume):
+def test_init_values_file_contains_all_data(fix_volume):
     for node in fix_volume.nodes.index:
         with open(os.path.join(fix_volume.TMP_FOLDER, node, "init_values.json")) as json_data:
             init_values = json.load(json_data)
         assert "c" in init_values
 
 
-def test_node_config_file(fix_volume):
+def test_node_config_file_contains_all_data(fix_volume):
     for node in fix_volume.nodes.index:
         with open(os.path.join(fix_volume.TMP_FOLDER, node, "config_file.json")) as json_data:
             config_file = json.load(json_data)

@@ -5,6 +5,11 @@ from ictdeploy import Simulator as Sim
 
 @pytest.fixture()
 def fix_create():
+    """
+    Fixture for testing purpose creating a ready-to-run simple co-simulation
+
+    :return: ictdeploy.Simulator() with meta, models, nodes, links, groups, sequence and steps implemented
+    """
     sim = Sim()
 
     sim.add_meta(
@@ -49,6 +54,11 @@ def fix_create():
 
 @pytest.fixture()
 def fix_volume():
+    """
+    Fixture for testing purpose based on fix_create() creating the local temporary folder to be mounted into containers
+
+    :return: ictdeploy.Simulator() with local folders created for each node
+    """
     sim = fix_create()
 
     for node_name, node in sim.nodes.iterrows():
@@ -64,6 +74,11 @@ def fix_volume():
 
 @pytest.fixture()
 def fix_deploy():
+    """
+    Fixture for testing purpose based on fix_create() deploying all nodes and starting simulation
+
+    :return: ictdeploy.Simulator() with simulation running and auxiliary nodes, orchestrator, and simulation nodes logs
+    """
     sim = fix_create()
 
     logs_aux = sim.deploy_aux()

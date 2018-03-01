@@ -4,6 +4,9 @@ import logging
 
 
 class Node:
+    """
+    Class defined to store the node's data into the networkx.MultiDiGraph() structure
+    """
     def __init__(self, name, model, init_values, is_first):
         self.name = name
 
@@ -15,13 +18,10 @@ class Node:
         return str(self.model) + " -> " + str(self.init_values)
 
 
-def _empty_list_if_none(l):
-    if l is None:
-        l = []
-    return l
-
-
 class GraphCreator:
+    """
+    Class for gathering methods allowing the creation of a co-simulation graph
+    """
     def __init__(self):
         self.meta_models = {}
         self.models = {}
@@ -29,6 +29,9 @@ class GraphCreator:
 
     @property
     def nodes(self):
+        """
+        :return: a pandas.DataFrame() containing all information about the simulation nodes
+        """
         return pd.DataFrame.from_dict(
             {
                 node: {
@@ -47,6 +50,9 @@ class GraphCreator:
 
     @property
     def links(self):
+        """
+        :return: a pandas.DataFrame() containing all information about the links between the simulation nodes
+        """
         return pd.DataFrame(
             [
                 {
@@ -57,15 +63,34 @@ class GraphCreator:
                 } for get_node, set_node, data in self._graph.edges(data=True)
             ])
 
-    def add_meta(self, name, set_attrs=None, get_attrs=None):
+    def add_meta(self, name, set_attrs=list(), get_attrs=list()):
+        """
+        Create a meta-model defining attributes to set (inputs) and to get (outputs)
+
+        :param name: string defining the name of the meta-model
+        :param set_attrs: list of string, default: None
+        :param get_attrs: list of string, default: None
+        :return:
+        """
         self.meta_models[name] = {
-            'set_attrs': _empty_list_if_none(set_attrs),
-            'get_attrs': _empty_list_if_none(get_attrs)
+            'set_attrs': set_attrs,
+            'get_attrs': get_attrs
         }
         logging.info("Meta-model {} created.".format(name))
         return name
 
     def add_model(self, name, meta, image, wrapper, command, files):
+        """
+        Create a model based on the corresponding meta-model
+
+        :param name: string defining the name of the model
+        :param meta: name of the corresponding meta-model
+        :param image: docker image containing environments with all the model's dependencies
+        :param wrapper: wrapper file for the model
+        :param command: optional command to add
+        :param files: optional files to add into the model's container
+        :return:
+        """
         self.models[name] = {
             'meta': meta,
             'image': image,
@@ -77,6 +102,15 @@ class GraphCreator:
         return name
 
     def add_node(self, name, model, init_values=None, is_first=False):
+        """
+        Create a node based on the corresponding model
+
+        :param name: string defining the name of the node
+        :param model: name of the corresponding model
+        :param init_values: a dict mapping the initial values to the model's parameters, default: None
+        :param is_first: set to True if the node is in the first group of the simulation sequence, default: False
+        :return: the node's name
+        """
         if init_values is None:
             init_values = {}
         node = Node(name, model, init_values, is_first)
@@ -85,19 +119,47 @@ class GraphCreator:
         return node.name
 
     def add_link(self, get_node, set_node, get_attr, set_attr, unit="unit"):
+        """
+        Create a link between two node, defining attribute to get (output) and to set (input)
+
+        :param get_node: name of the node to get a value from
+        :param set_node: name of the node to set a value to
+        :param get_attr: name of the get_node's attribute to get
+        :param set_attr: name of the set_node's attribute to set
+        :param unit: , default: "unit" (without unit)
+        :return: nothing :)
+        """
         self._graph.add_edge(get_node, set_node, link={"get_attr": get_attr, "set_attr": set_attr, "unit": unit})
 
     def add_multiple_links_between_two_nodes(self, get_node, set_node, get_attrs, set_attrs, units=None):
+        """
+        Create multiple links between two nodes, defining a list of attributes to get (outputs) and to set (inputs)
+
+        :param get_node: name of the node to get a value from
+        :param set_node: name of the node to set a value to
+        :param get_attrs: list of names of the get_node's attribute to get
+        :param set_attrs: list of names of the set_node's attribute to set
+        :param units: list of the corresponding attributes units
+        :return: nothing :)
+        """
         if not units:
             units = ["unit"] * len(get_attrs)
         for get_attr, set_attr, unit in zip(get_attrs, set_attrs, units):
             self.add_link(get_node, set_node, get_attr, set_attr, unit)
 
     def reset_graph(self):
+        """
+        Delete all nodes and links (without removing meta-models and models)
+
+        :return: nothing :)
+        """
         self._graph = nx.MultiDiGraph()
 
     @property
     def interaction_graph(self):
+        """
+        :return: a dict containing the information about the interaction between the nodes and the co-simulation graph
+        """
         return {
             "nodes": {node: {
                 "input": row["to_set"],

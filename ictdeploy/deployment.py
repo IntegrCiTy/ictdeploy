@@ -8,6 +8,9 @@ from ictdeploy.base_config import base_config
 
 
 class SimNodesCreator:
+    """
+    Class for gathering methods allowing the deployment of simulation nodes
+    """
     CLIENT = docker.from_env()
     TMP_FOLDER = "TMP_FOLDER"
     INIT_VALUES_FILE = 'init_values.json'
@@ -51,7 +54,7 @@ class SimNodesCreator:
         Create the local folder that will be "synchronized" with / mounted into the container
 
         :param node_name: well... the name of the node
-        :param init_values: a dict mapping the initial values to the parameters names
+        :param init_values: a dict mapping the initial values to the model's parameters
         :param files: bunch of files that need to be added to the container for running the wrapper
         :return: the local path of the node's folder
         """
@@ -68,7 +71,7 @@ class SimNodesCreator:
 
     def deploy_node(self, node_name, node, node_folder, client):
         """
-
+        Deploy a simulation node, create and send command and mount the dedicated local volume into the container
 
         :param node_name: well... the name of the node
         :param node: a dict mapping all the necessary information to run the node (image, wrapper, etc.)
