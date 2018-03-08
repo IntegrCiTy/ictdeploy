@@ -12,16 +12,12 @@ See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
 ```
 Python >= 3.5 (https://www.python.org/downloads/)
 Docker Community-edition (https://www.docker.com/community-edition)
 ```
 
 ### Installing
-
-A step by step series of examples that tell you have to get a development env running
 
 Install git (if not already done) (More info on [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 
