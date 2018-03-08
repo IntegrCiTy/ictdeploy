@@ -104,7 +104,5 @@ If not, see http://www.apache.org/licenses/LICENSE-2.0.
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* TO DO ...
 
