@@ -23,31 +23,45 @@ Docker Community-edition (https://www.docker.com/community-edition)
 
 A step by step series of examples that tell you have to get a development env running
 
+Install git (if not already done) (More info on [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
+
+If you’re on a Debian-based distribution like Ubuntu, try apt-get:
+
+```
+$ sudo apt-get install git-all
+```
+
 Install virtualenv (if not already done) (More info on [virtualenv](https://virtualenv.pypa.io/en/stable/installation/))
 
 ```
-pip install virtualenv
+$ pip install virtualenv
 ```
 
 Create a Python 3.5 virtual env
 
 ```
-virtualenv -p python3 ict
+$ virtualenv -p python3 ict
 ```
 
 Activate the created virtual env (ict)
 
 ```
-source link/to/ict/bin/activate
+$ source link/to/ict/bin/activate
 ```
 
-And repeat
+Install dependencies
 
 ```
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Install ictdeploy (in the ictdeploy folder)
+
+```
+$ python setup.py install
+```
+
+A full scale demo with real data and complex models will soon be available.
 
 ## Running the tests
 
@@ -56,14 +70,18 @@ To run tests just run `pytest` with command line in the dedicated environment in
 
 ### Break down into end to end tests
 
+`test_creation.py` gathers the tests for the creation of the simulation graph (meta-models, models, nodes, links, ...).
+
 ```
 pytest tests/test_creation.py
 ```
 
+`test_command.py` gathers the tests for the execution of commands by wrappers inside Docker containers.
 ```
 pytest tests/test_command.py
 ```
 
+`test_deployment.py` gathers the tests for the deployment of all different nodes.
 ```
 pytest tests/test_deployment.py
 ```
@@ -78,8 +96,6 @@ pytest tests/test_deployment.py
 ## Authors
 
 * **Pablo Puerto** - *Initial work*
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
