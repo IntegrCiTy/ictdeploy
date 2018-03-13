@@ -1,5 +1,5 @@
 base_config = {
-  "name": "TO_BE_REPLACED",
+  "name": "",
   "queues": {
     "obnl.simulation.node.": "on_simulation",
     "obnl.local.node.": "on_local",

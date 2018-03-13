@@ -18,12 +18,22 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
     """
 
     SCE_JSON_FILE = "interaction_graph.json"
+    """Default value for interaction graph json file used by OBNL"""
+
     RUN_JSON_FILE = "sequences_and_steps.json"
+    """Default value for sequences and steps json file used by OBNL"""
+
     UNITS = {"seconds": 1, "minutes": 60, "hours": 3600}
+    """Dict used for time units conversion"""
 
     RABBITMQ_ADMIN_PASSWORD = "admin"
+    """Admin password for RabbitMQ"""
+
     RABBITMQ_OBNL_PASSWORD = "obnl"
+    """Default password for OBNL"""
+
     RABBITMQ_TOOL_PASSWORD = "tool"
+    """Tool password for RabbitMQ"""
 
     def __init__(self):
         super().__init__()

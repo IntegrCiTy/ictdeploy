@@ -11,13 +11,24 @@ class SimNodesCreator:
     """
     Class for gathering methods allowing the deployment of simulation nodes
     """
+
     CLIENT = docker.from_env()
+    """Default docker client"""
+
     TMP_FOLDER = "TMP_FOLDER"
+    """Name of the temporary local folder"""
+
     INIT_VALUES_FILE = 'init_values.json'
+    """Default name for the initial values json file"""
+
     CONFIG_FILE = "config_file.json"
+    """Name of the Protobuf configuration file"""
+
     HOST = "172.17.01"
+    """Default host address for host of Redis and RabbitMQ"""
 
     BASE_CONFIG = base_config
+    """Base configuration for Protobuf"""
 
     def __init__(self):
         pass
