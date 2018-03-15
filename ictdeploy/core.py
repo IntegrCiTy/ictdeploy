@@ -220,6 +220,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
 
     def run_simulation(self, server, client=None):
         """
+        Run the simulation, deploying RabbitMQ, Redis, OBNL and the simulation nodes
 
         :param server: link to the file that will be running OBNL
         :param client: Docker client (default: from local environment)
