@@ -15,6 +15,47 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
 
     """
     Main class to import for co-simulation running, it gathers all the useful methods.
+    To be used as the following example:
+
+    sim = Sim()
+
+    sim.add_meta(
+        name="BaseMeta",
+        set_attrs=["a"],
+        get_attrs=["b"]
+    )
+
+    sim.add_model(
+        name="BaseModel",
+        meta="BaseMeta",
+        image="integrcity/ict-simple",
+        wrapper=os.path.join("tests", "wrappers", "base_wrap.py"),
+        command=None,
+        files=[os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")]
+    )
+
+    sim.add_node(
+        name="Base0",
+        model="BaseModel",
+        init_values={"c": 0.5},
+        is_first=True
+    )
+
+    sim.add_node(
+        name="Base1",
+        model="BaseModel",
+        init_values={"c": 0.25}
+    )
+
+    sim.add_link(get_node="Base0", get_attr="b", set_node="Base1", set_attr="a")
+    sim.add_link(get_node="Base1", get_attr="b", set_node="Base0", set_attr="a")
+
+    grp0 = sim.create_group("Base0")
+    grp1 = sim.create_group("Base1")
+
+    sim.create_sequence(grp0, grp1)
+    sim.create_steps([60] * 10)
+
     """
 
     SCE_JSON_FILE = "interaction_graph.json"
@@ -176,6 +217,18 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
                 client=client
             )
         return logs
+
+    def run_simulation(self, server, client=None):
+        """
+
+        :param server: link to the file that will be running OBNL
+        :param client: Docker client (default: from local environment)
+        :return: a dict containing the logs of RabbitMQ, Redis, OBNL and the simulation nodes
+        """
+        logs_aux = self.deploy_aux(client=client)
+        logs_orc = self.deploy_orchestrator(server=server, client=client)
+        logs_nodes = self.deploy_nodes(client=client)
+        return {"aux": logs_aux, "orc": logs_orc, "nodes": logs_nodes}
 
     def create_group(self, *nodes):
         """
