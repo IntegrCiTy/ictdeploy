@@ -7,3 +7,5 @@ venv
 try*
 build
 dist
+Makefile
+source
