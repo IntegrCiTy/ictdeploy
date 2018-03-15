@@ -1,3 +1,8 @@
+"""
+This file define basic configuration for RabbitMQ and Protobuf communication
+for the simulation nodes and the orchestrator nodes.
+"""
+
 base_config = {
   "name": "",
   "queues": {
