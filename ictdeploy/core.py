@@ -57,7 +57,7 @@ class Simulator:
     sim.create_steps([60] * 10)
 
     logs = sim.run_simulation(server=os.path.join("tests", "server.py"))
-    assert len([l for l in get_logs(logs["orc"]) if "Simulation finished." in l]) == 1
+    assert len([l for l in self.get_logs(logs["orc"]) if "Simulation finished." in l]) == 1
 
     sim.results.connect_to_results_db()
     res = sim.results.get_results_by_pattern("IN*Base0*")

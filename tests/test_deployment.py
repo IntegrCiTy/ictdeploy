@@ -24,7 +24,7 @@ def test_rabbitmq_and_redis_are_running(fix_deploy):
 def test_run_simulation_method(fix_create):
     sim = fix_create
     logs = sim.run_simulation(server=os.path.join("tests", "server.py"))
-    assert len([l for l in get_logs(logs["orc"]) if "Simulation finished." in l]) == 1
+    assert len([l for l in sim.get_logs(logs["orc"]) if "Simulation finished." in l]) == 1
 
 
 def teardown_function():

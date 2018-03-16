@@ -3,6 +3,9 @@ import pandas as pd
 import logging
 
 
+__all__ = ['GraphCreator']
+
+
 class Node:
     """
     Class defined to store the node's data into the networkx.MultiDiGraph() structure
