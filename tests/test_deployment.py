@@ -7,7 +7,7 @@ from tests.fixtures_test import fix_create, fix_deploy
 def test_needed_files_are_in_the_obnl_folder(fix_deploy):
     sim, _, _, _ = fix_deploy
     files = ['interaction_graph.json', 'sequences_and_steps.json', 'config_file.json', 'server.py']
-    assert os.listdir(os.path.join(sim.TMP_FOLDER, "obnl_folder")) == files
+    assert os.listdir(os.path.join(sim.deploy.TMP_FOLDER, "obnl_folder")) == files
 
 
 def test_simulation_run_until_the_end(fix_deploy):
@@ -17,14 +17,14 @@ def test_simulation_run_until_the_end(fix_deploy):
 
 def test_rabbitmq_and_redis_are_running(fix_deploy):
     sim, _, _, _ = fix_deploy
-    assert sim.CLIENT.containers.get('ict_rab').status == "running"
-    assert sim.CLIENT.containers.get('ict_red').status == "running"
+    assert sim.deploy.CLIENT.containers.get('ict_rab').status == "running"
+    assert sim.deploy.CLIENT.containers.get('ict_red').status == "running"
 
 
 def test_run_simulation_method(fix_create):
     sim = fix_create
     logs = sim.run_simulation(server=os.path.join("tests", "server.py"))
-    assert len([l for l in get_logs(logs["orc"]) if "Simulation finished." in l]) == 1
+    assert len([l for l in sim.get_logs(logs["orc"]) if "Simulation finished." in l]) == 1
 
 
 def teardown_function():

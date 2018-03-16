@@ -5,7 +5,4 @@ venv
 .idea
 */__pycache__/*
 try*
-build
 dist
-Makefile
-source

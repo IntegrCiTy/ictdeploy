@@ -12,13 +12,13 @@ def fix_create():
     """
     sim = Sim()
 
-    sim.add_meta(
+    sim.edit.add_meta(
         name="BaseMeta",
         set_attrs=["a"],
         get_attrs=["b"]
     )
 
-    sim.add_model(
+    sim.edit.add_model(
         name="BaseModel",
         meta="BaseMeta",
         image="integrcity/ict-simple",
@@ -27,21 +27,21 @@ def fix_create():
         files=[os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")]
     )
 
-    sim.add_node(
+    sim.edit.add_node(
         name="Base0",
         model="BaseModel",
         init_values={"c": 0.5},
         is_first=True
     )
 
-    sim.add_node(
+    sim.edit.add_node(
         name="Base1",
         model="BaseModel",
         init_values={"c": 0.25}
     )
 
-    sim.add_link(get_node="Base0", get_attr="b", set_node="Base1", set_attr="a")
-    sim.add_link(get_node="Base1", get_attr="b", set_node="Base0", set_attr="a")
+    sim.edit.add_link(get_node="Base0", get_attr="b", set_node="Base1", set_attr="a")
+    sim.edit.add_link(get_node="Base1", get_attr="b", set_node="Base0", set_attr="a")
 
     grp0 = sim.create_group("Base0")
     grp1 = sim.create_group("Base1")
@@ -61,8 +61,8 @@ def fix_volume():
     """
     sim = fix_create()
 
-    for node_name, node in sim.nodes.iterrows():
-        sim.create_volume(
+    for node_name, node in sim.edit.nodes.iterrows():
+        sim.deploy.create_volume(
             node_name,
             node["init_values"],
             node["wrapper"],
