@@ -11,7 +11,7 @@ from ictdeploy.base_config import obnl_config
 import numpy as np
 
 
-class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
+class Simulator:
 
     """
     Main class to import for co-simulation running, it gathers all the useful methods.
@@ -79,6 +79,10 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
     def __init__(self):
         super().__init__()
 
+        self.nodes_deploy = SimNodesCreator
+        self.graph_edit = GraphCreator
+        self.results_get = SimResultsGetter
+
         self.sequence = []
         self.steps = []
 
@@ -89,8 +93,8 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
         :param client: Docker client (default: from local environment)
         :return: nothing :)
         """
-        if os.path.isdir(self.TMP_FOLDER):
-            shutil.rmtree(self.TMP_FOLDER)
+        if os.path.isdir(self.nodes_deploy.TMP_FOLDER):
+            shutil.rmtree(self.nodes_deploy.TMP_FOLDER)
 
         client.containers.prune()
 
@@ -107,7 +111,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
         """
 
         if client is None:
-            client = self.CLIENT
+            client = self.nodes_deploy.CLIENT
 
         self._clean_all(client)
 
@@ -161,18 +165,18 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
         :return: logs of the OBNL container as generator
         """
         if client is None:
-            client = self.CLIENT
+            client = self.nodes_deploy.CLIENT
 
-        obnl_folder = os.path.join(self.TMP_FOLDER, "obnl_folder")
+        obnl_folder = os.path.join(self.nodes_deploy.TMP_FOLDER, "obnl_folder")
         os.makedirs(obnl_folder)
 
         with open(os.path.join(obnl_folder, self.SCE_JSON_FILE), 'w') as fp:
-            json.dump(self.interaction_graph, fp)
+            json.dump(self.graph_edit.interaction_graph, fp)
 
         with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), 'w') as fp:
             json.dump({"steps": self.steps, "schedule": self.sequence, "simulation_name": simulation}, fp)
 
-        with open(os.path.join(obnl_folder, self.CONFIG_FILE), 'w') as fp:
+        with open(os.path.join(obnl_folder, self.nodes_deploy.CONFIG_FILE), 'w') as fp:
             json.dump(obnl_config, fp)
 
         shutil.copyfile(server, os.path.join(obnl_folder, "server.py"))
@@ -182,7 +186,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
             'integrcity/ict-obnl',
             name='ict_orch',
             volumes={os.path.abspath(obnl_folder): {'bind': "/home/project", 'mode': 'rw'}},
-            command='{} {} {}'.format(self.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
+            command='{} {} {}'.format(self.nodes_deploy.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
             detach=True,
             auto_remove=True)
 
@@ -199,18 +203,18 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
         """
         logs = {}
 
-        nodes = self.nodes
+        nodes = self.graph_edit.nodes
 
         for node_name, node in nodes.iterrows():
 
-            node_folder = self.create_volume(
+            node_folder = self.nodes_deploy.create_volume(
                 node_name,
                 node["init_values"],
                 node["wrapper"],
                 *node["files"]
             )
 
-            logs[node_name] = self.deploy_node(
+            logs[node_name] = self.nodes_deploy.deploy_node(
                 node_name=node_name,
                 node=node,
                 node_folder=node_folder,
@@ -218,16 +222,17 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
             )
         return logs
 
-    def run_simulation(self, server, client=None):
+    def run_simulation(self, server, simulation="demotest", client=None):
         """
         Run the simulation, deploying RabbitMQ, Redis, OBNL and the simulation nodes
 
+        :param simulation: name of the current simulation
         :param server: link to the file that will be running OBNL
         :param client: Docker client (default: from local environment)
         :return: a dict containing the logs of RabbitMQ, Redis, OBNL and the simulation nodes
         """
         logs_aux = self.deploy_aux(client=client)
-        logs_orc = self.deploy_orchestrator(server=server, client=client)
+        logs_orc = self.deploy_orchestrator(server=server, client=client, simulation=simulation)
         logs_nodes = self.deploy_nodes(client=client)
         return {"aux": logs_aux, "orc": logs_orc, "nodes": logs_nodes}
 
@@ -238,7 +243,7 @@ class Simulator(GraphCreator, SimNodesCreator, SimResultsGetter):
         :param nodes: some nodes names
         :return: selected nodes names as a list
         """
-        h = self._graph.subgraph(nodes)
+        h = self.graph_edit.graph.subgraph(nodes)
         try:
             assert len(h.edges) == 0
             logging.info("The group {} have been created.".format(nodes))

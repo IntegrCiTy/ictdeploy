@@ -25,7 +25,7 @@ class GraphCreator:
     def __init__(self):
         self.meta_models = {}
         self.models = {}
-        self._graph = nx.MultiDiGraph()
+        self.graph = nx.MultiDiGraph()
 
     @property
     def nodes(self):
