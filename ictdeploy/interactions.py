@@ -45,7 +45,7 @@ class GraphCreator:
                     "command": self.models[data["node"].model]["command"],
                     "init_values": data["node"].init_values,
                     "is_first": data["node"].is_first
-                } for node, data in self._graph.nodes(data=True)
+                } for node, data in self.graph.nodes(data=True)
             }, orient="index")
 
     @property
@@ -60,7 +60,7 @@ class GraphCreator:
                     "get_attr": data["link"]["get_attr"],
                     "set_node": set_node,
                     "set_attr": data["link"]["set_attr"]
-                } for get_node, set_node, data in self._graph.edges(data=True)
+                } for get_node, set_node, data in self.graph.edges(data=True)
             ])
 
     def add_meta(self, name, set_attrs=list(), get_attrs=list()):
@@ -114,7 +114,7 @@ class GraphCreator:
         if init_values is None:
             init_values = {}
         node = Node(name, model, init_values, is_first)
-        self._graph.add_node(node.name, node=node)
+        self.graph.add_node(node.name, node=node)
         logging.info("Node {} created.".format(name))
         return node.name
 
@@ -129,7 +129,7 @@ class GraphCreator:
         :param unit: , default: "unit" (without unit)
         :return: nothing :)
         """
-        self._graph.add_edge(get_node, set_node, link={"get_attr": get_attr, "set_attr": set_attr, "unit": unit})
+        self.graph.add_edge(get_node, set_node, link={"get_attr": get_attr, "set_attr": set_attr, "unit": unit})
 
     def add_multiple_links_between_two_nodes(self, get_node, set_node, get_attrs, set_attrs, units=None):
         """
@@ -153,7 +153,7 @@ class GraphCreator:
 
         :return: nothing :)
         """
-        self._graph = nx.MultiDiGraph()
+        self.graph = nx.MultiDiGraph()
 
     @property
     def interaction_graph(self):

@@ -15,13 +15,13 @@ image = "ict-base"
 def f():
     sim = Sim()
 
-    sim.add_meta(
+    sim.edit.add_meta(
         name="SimpleHP",
         set_attrs=["a1", "a2"],
         get_attrs=["b1", "b2"]
     )
 
-    sim.add_model(
+    sim.edit.add_model(
         name="fmuHP",
         meta="SimpleHP",
         image=image,
@@ -30,7 +30,7 @@ def f():
         files=[]
     )
 
-    sim.add_node(
+    sim.edit.add_node(
         name="HP_0",
         model="fmuHP",
         is_first=True,

@@ -8,23 +8,23 @@ from tests.fixtures_test import fix_create, fix_volume
 
 
 def test_returned_links_is_a_data_frame(fix_create):
-    assert type(fix_create.links) is pd.DataFrame
+    assert type(fix_create.edit.links) is pd.DataFrame
 
 
 def test_graph_is_a_multi_directed_graph(fix_create):
-    assert type(fix_create._graph) is nx.MultiDiGraph
+    assert type(fix_create.edit.graph) is nx.MultiDiGraph
 
 
 def test_number_of_created_nodes_is_correct(fix_create):
-    assert len(fix_create.nodes) == 2
+    assert len(fix_create.edit.nodes) == 2
 
 
 def test_number_of_created_links_is_correct(fix_create):
-    assert len(fix_create.links) == 2
+    assert len(fix_create.edit.links) == 2
 
 
 def test_returned_nodes_are_meaningful(fix_create):
-    for _, row in fix_create.nodes.iterrows():
+    for _, row in fix_create.edit.nodes.iterrows():
         assert row["model"] == "BaseModel"
         assert row["meta"] == "BaseMeta"
         assert row["to_set"] == ["a"]
@@ -36,7 +36,7 @@ def test_returned_nodes_are_meaningful(fix_create):
 
 
 def test_interaction_graph_links_and_nodes_number(fix_create):
-    g_dict = fix_create.interaction_graph
+    g_dict = fix_create.edit.interaction_graph
     assert len(g_dict["links"]) == 2
     assert len(g_dict["nodes"]) == 2
 
@@ -50,29 +50,29 @@ def test_sequence_is_well_defined(fix_create):
 
 
 def test_tmp_folder_is_created(fix_volume):
-    assert os.path.isdir(fix_volume.TMP_FOLDER)
+    assert os.path.isdir(fix_volume.deploy.TMP_FOLDER)
 
 
 def test_nodes_folders_are_created(fix_volume):
-    assert os.listdir(fix_volume.TMP_FOLDER) == ['Base0', 'Base1']
+    assert os.listdir(fix_volume.deploy.TMP_FOLDER) == ['Base0', 'Base1']
 
 
 def test_basic_files_are_in_nodes_folders(fix_volume):
-    for node in fix_volume.nodes.index:
+    for node in fix_volume.edit.nodes.index:
         files = ['empty_file_for_testing_purpose.txt', 'base_wrap.py', 'init_values.json', 'config_file.json']
-        assert os.listdir(os.path.join(fix_volume.TMP_FOLDER, node)) == files
+        assert os.listdir(os.path.join(fix_volume.deploy.TMP_FOLDER, node)) == files
 
 
 def test_init_values_file_contains_all_data(fix_volume):
-    for node in fix_volume.nodes.index:
-        with open(os.path.join(fix_volume.TMP_FOLDER, node, "init_values.json")) as json_data:
+    for node in fix_volume.edit.nodes.index:
+        with open(os.path.join(fix_volume.deploy.TMP_FOLDER, node, "init_values.json")) as json_data:
             init_values = json.load(json_data)
         assert "c" in init_values
 
 
 def test_node_config_file_contains_all_data(fix_volume):
-    for node in fix_volume.nodes.index:
-        with open(os.path.join(fix_volume.TMP_FOLDER, node, "config_file.json")) as json_data:
+    for node in fix_volume.edit.nodes.index:
+        with open(os.path.join(fix_volume.deploy.TMP_FOLDER, node, "config_file.json")) as json_data:
             config_file = json.load(json_data)
         assert {"name", "queues", "exchanges"}.issubset(config_file)
         assert {"obnl.simulation.node.", "obnl.local.node.", "obnl.data.node."}.issubset(config_file["queues"])
