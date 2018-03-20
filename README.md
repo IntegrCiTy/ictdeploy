@@ -19,6 +19,8 @@ Docker Community-edition (https://www.docker.com/community-edition)
 
 ### Installing
 
+#### Linux
+
 Install git (if not already done) (More info on [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 
 If you’re on a Debian-based distribution like Ubuntu, try apt-get:
@@ -56,6 +58,45 @@ Install ictdeploy (in the ictdeploy folder)
 ```
 $ python setup.py install
 ```
+
+A full scale demo with real data and complex models will soon be available.
+
+
+#### Windows
+
+Use [Git for Windows](https://git-scm.com/download/win) to clone the [ictdeploy repository](https://github.com/IntegrCiTy/ictdeploy).
+For instance, when using *Git Bash* type the following on the command line:
+```
+$ git clone https://github.com/IntegrCiTy/ictdeploy.git
+```
+
+Use *pip* in the Windows command line to install [virtualenv](https://virtualenv.pypa.io/en/stable/) and [virtualenvwrapper-win](https://pypi.python.org/pypi/virtualenvwrapper-win):
+```
+> pip install virtualenv
+> pip install virtualenvwrapper-win
+```
+
+Use *mkvirtualenv* in the Windows command line to create and start a Python 3.5 virtual environment called *ict*:
+```
+> mkvirtualenv -p C:\path\to\python35.exe ict
+```
+
+*Optional*: In the virtual environment, set the working directory to the *ictdeploy* root directory:
+```
+(ict) setprojectdir C:\path\to\ictdeploy
+```
+
+In the virtual environment, install dependencies:
+```
+(ict) pip install -r requirements.txt
+```
+
+Install ictdeploy (in the ictdeploy folder)
+
+```
+(ict) python setup.py install
+```
+
 
 A full scale demo with real data and complex models will soon be available.
 
