@@ -54,7 +54,7 @@ def test_tmp_folder_is_created(fix_volume):
 
 
 def test_nodes_folders_are_created(fix_volume):
-    assert os.listdir(fix_volume.deploy.TMP_FOLDER) == ['Base0', 'Base1']
+    assert set(os.listdir(fix_volume.deploy.TMP_FOLDER)) == {'Base0', 'Base1'}
 
 
 def test_basic_files_are_in_nodes_folders(fix_volume):
