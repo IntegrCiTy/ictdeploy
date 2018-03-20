@@ -59,8 +59,8 @@ def test_nodes_folders_are_created(fix_volume):
 
 def test_basic_files_are_in_nodes_folders(fix_volume):
     for node in fix_volume.edit.nodes.index:
-        files = ['empty_file_for_testing_purpose.txt', 'base_wrap.py', 'init_values.json', 'config_file.json']
-        assert os.listdir(os.path.join(fix_volume.deploy.TMP_FOLDER, node)) == files
+        files = {'empty_file_for_testing_purpose.txt', 'base_wrap.py', 'init_values.json', 'config_file.json'}
+        assert set(os.listdir(os.path.join(fix_volume.deploy.TMP_FOLDER, node))) == files
 
 
 def test_init_values_file_contains_all_data(fix_volume):
