@@ -19,9 +19,9 @@ def test_getting_simulation_results_by_pattern(fix_deploy):
     assert len([l for l in get_logs(logs_orc) if "Simulation finished." in l]) == 1
     sim.results.connect_to_results_db()
     res = sim.results.get_results_by_pattern("IN*Base0*")
-    assert set(res) == {"IN_Base0_a"}
-    assert type(res["IN_Base0_a"]) == pd.Series
-    assert len(res["IN_Base0_a"].index) == 9
+    assert set(res) == {"IN||Base0||a"}
+    assert type(res["IN||Base0||a"]) == pd.Series
+    assert len(res["IN||Base0||a"].index) == 9
 
 
 def teardown_function():

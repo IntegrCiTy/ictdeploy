@@ -68,8 +68,8 @@ class Node(ClientNode):
         # Update input attributes and save input attributes and corresponding simulation time step to Redis DB
         for key, value in self.input_values.items():
             setattr(self, key, value)
-            self.redis.rpush('IN_' + self.name + '_' + key, getattr(self, key))
-            self.redis.rpush('IN_' + self.name + '_' + key + '_time', current_time)
+            self.redis.rpush('IN||' + self.name + '||' + key, getattr(self, key))
+            self.redis.rpush('IN||' + self.name + '||' + key + '||time', current_time)
 
         # Compute intern state
         logging.debug(self.name, "compute new intern state")
@@ -82,8 +82,8 @@ class Node(ClientNode):
 
         # Save output attributes and corresponding simulation time step to Redis DB
         for key in self.output_attributes:
-            self.redis.rpush('OUT_' + self.name + '_' + key, getattr(self, key))
-            self.redis.rpush('OUT_' + self.name + '_' + key + '_time', current_time)
+            self.redis.rpush('OUT||' + self.name + '||' + key, getattr(self, key))
+            self.redis.rpush('OUT||' + self.name + '||' + key + '||time', current_time)
 
 
 if __name__ == "__main__":
