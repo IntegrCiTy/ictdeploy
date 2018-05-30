@@ -10,7 +10,7 @@ def test_the_list_of_available_simulation_results(fix_deploy):
     sim.results.connect_to_results_db()
     df = sim.results.list_of_available_results
     assert type(df) == pd.DataFrame
-    assert set(list(df.columns)) == {'Node', 'IN/OUT', 'Attribute'}
+    assert set(list(df.columns)) == {"Node", "IN/OUT", "Attribute"}
     assert len(df.index) == 4
 
 

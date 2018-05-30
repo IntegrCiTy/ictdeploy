@@ -18,7 +18,7 @@ class SimNodesCreator:
     TMP_FOLDER = "TMP_FOLDER"
     """Name of the temporary local folder"""
 
-    INIT_VALUES_FILE = 'init_values.json'
+    INIT_VALUES_FILE = "init_values.json"
     """Default name for the initial values json file"""
 
     CONFIG_FILE = "config_file.json"
@@ -42,7 +42,7 @@ class SimNodesCreator:
         :return: nothing :)
         """
         init_json = os.path.join(node_folder, self.INIT_VALUES_FILE)
-        with open(init_json, 'w') as outfile:
+        with open(init_json, "w") as outfile:
             json.dump(init_values, outfile)
 
     def _create_config_file(self, node_name, node_folder):
@@ -57,7 +57,7 @@ class SimNodesCreator:
         node_config["name"] = node_name
 
         config_json = os.path.join(node_folder, self.CONFIG_FILE)
-        with open(config_json, 'w') as outfile:
+        with open(config_json, "w") as outfile:
             json.dump(node_config, outfile)
 
     def create_volume(self, node_name, init_values, *files):
@@ -100,10 +100,12 @@ class SimNodesCreator:
         # Build the command with the wrapper, the host, the name of the files with the initial values and the parameters
         full_command = [
             os.path.basename(node["wrapper"]),
-            self.HOST, node_name,
+            self.HOST,
+            node_name,
             self.INIT_VALUES_FILE,
             *param_i,
-            *param_o]
+            *param_o,
+        ]
 
         # Add the "--first" option if the node is in the first group of the sequence
         if node["is_first"]:
@@ -117,10 +119,12 @@ class SimNodesCreator:
         client.containers.run(
             image=node["image"],
             name=node_name,
-            volumes={os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}},
+            volumes={
+                os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}
+            },
             command=full_command,
             detach=True,
-            auto_remove=True
+            auto_remove=True,
         )
         logging.info("The node {} is deployed.".format(node_name))
 

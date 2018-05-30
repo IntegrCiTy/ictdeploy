@@ -7,6 +7,7 @@ class SimResultsGetter:
     """
     Class gathering methods allowing the collection of results
     """
+
     def __init__(self):
         self.redis = None
 
@@ -28,9 +29,11 @@ class SimResultsGetter:
         :return: a pandas.DataFrame() describing the available results by nodes
         """
         keys = [k.decode("utf-8") for k in self.redis.keys() if "time" not in str(k)]
-        return pd.DataFrame([k.split('||') for k in keys], columns=["IN/OUT", "Node", "Attribute"])
+        return pd.DataFrame(
+            [k.split("||") for k in keys], columns=["IN/OUT", "Node", "Attribute"]
+        )
 
-    def get_results_by_pattern(self, pattern, origin='2015-01-01'):
+    def get_results_by_pattern(self, pattern, origin="2015-01-01"):
         """
         Allow to get results from a given name pattern
 
@@ -40,8 +43,8 @@ class SimResultsGetter:
         """
         matching_keys = [key.decode("utf-8") for key in self.redis.keys(pattern)]
 
-        list_of_value = sorted([key for key in matching_keys if 'time' not in key])
-        list_of_index = sorted([key for key in matching_keys if 'time' in key])
+        list_of_value = sorted([key for key in matching_keys if "time" not in key])
+        list_of_index = sorted([key for key in matching_keys if "time" in key])
 
         res = {}
 
@@ -49,7 +52,7 @@ class SimResultsGetter:
             value = list(map(float, self.redis.lrange(key_v, 0, -1)))
             index = list(map(float, self.redis.lrange(key_t, 0, -1)))
 
-            index = pd.to_datetime(index, unit='s', origin=origin)
+            index = pd.to_datetime(index, unit="s", origin=origin)
 
             res[key_v] = pd.Series(value, index=index)
 

@@ -1,4 +1,5 @@
 docker
+numpy
 pandas
 networkx >= 2
 docopt

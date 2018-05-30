@@ -15,11 +15,7 @@ image = "ict-base"
 def f():
     sim = Sim()
 
-    sim.edit.add_meta(
-        name="SimpleHP",
-        set_attrs=["a1", "a2"],
-        get_attrs=["b1", "b2"]
-    )
+    sim.edit.add_meta(name="SimpleHP", set_attrs=["a1", "a2"], get_attrs=["b1", "b2"])
 
     sim.edit.add_model(
         name="fmuHP",
@@ -27,16 +23,14 @@ def f():
         image=image,
         wrapper=join(tests_folder, wraps_folder, wrap_cmd),
         command="hp.fmu",
-        files=[]
+        files=[],
     )
 
     sim.edit.add_node(
         name="HP_0",
         model="fmuHP",
         is_first=True,
-        init_values={
-            "p_nom": 100,
-            "mode": "heating"}
+        init_values={"p_nom": 100, "mode": "heating"},
     )
 
     return sim
@@ -46,7 +40,7 @@ def test_wrapper_received_command(f):
     sim = f
     logs = sim.deploy_nodes()
     logs = get_logs(logs["HP_0"])
-    str_logs = ''.join(str(elem) for elem in logs)
+    str_logs = "".join(str(elem) for elem in logs)
 
     waited = {
         "--first": True,
@@ -55,10 +49,10 @@ def test_wrapper_received_command(f):
         "--o": ["b1", "b2"],
         "--version": False,
         "-h": False,
-        '--cmd': "hp.fmu",
+        "--cmd": "hp.fmu",
         "<host>": "172.17.01",
         "<init>": "init_values.json",
-        "<name>": "HP_0"
+        "<name>": "HP_0",
     }
 
     assert waited.items() == literal_eval(str_logs).items()

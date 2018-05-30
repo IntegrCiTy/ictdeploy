@@ -18,6 +18,6 @@ Options
 
 """
 
-if __name__ == '__main__':
-    arguments = docopt(doc, version='0.0.1')
+if __name__ == "__main__":
+    arguments = docopt(doc, version="0.0.1")
     print(arguments)

@@ -19,7 +19,7 @@ Options
 """
 
 if __name__ == "__main__":
-    args = docopt(doc, version='0.0.1')
+    args = docopt(doc, version="0.0.1")
 
     Scheduler.activate_console_logging(logging.DEBUG)
 
@@ -31,12 +31,13 @@ if __name__ == "__main__":
 
     c = Scheduler(
         host=args["<host>"],
-        vhost='obnl_vhost',
-        username='obnl',
-        password='obnl',
-        config_file='config_file.json',
+        vhost="obnl_vhost",
+        username="obnl",
+        password="obnl",
+        config_file="config_file.json",
         simu_data=graph_data,
         schedule_data=schedule_data,
-        log_level=logging.DEBUG)
+        log_level=logging.DEBUG,
+    )
 
     c.start()

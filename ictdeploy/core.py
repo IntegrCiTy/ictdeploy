@@ -122,24 +122,26 @@ class Simulator:
 
         logging.info("Running Redis DB container ...")
         client.containers.run(
-            'redis:alpine',
-            name='ict_red',
-            ports={'6379/tcp': 6379},
+            "redis:alpine",
+            name="ict_red",
+            ports={"6379/tcp": 6379},
             detach=True,
-            auto_remove=True)
+            auto_remove=True,
+        )
 
         logging.info("Running RabbitMQ container ...")
         client.containers.run(
-            'integrcity/ict-rabbitmq',
-            name='ict_rab',
-            ports={'5672/tcp': 5672},
+            "integrcity/ict-rabbitmq",
+            name="ict_rab",
+            ports={"5672/tcp": 5672},
             environment={
-                'RABBITMQ_ADMIN_PASSWORD': self.RABBITMQ_ADMIN_PASSWORD,
-                'RABBITMQ_OBNL_PASSWORD': self.RABBITMQ_OBNL_PASSWORD,
-                'RABBITMQ_TOOL_PASSWORD': self.RABBITMQ_TOOL_PASSWORD,
+                "RABBITMQ_ADMIN_PASSWORD": self.RABBITMQ_ADMIN_PASSWORD,
+                "RABBITMQ_OBNL_PASSWORD": self.RABBITMQ_OBNL_PASSWORD,
+                "RABBITMQ_TOOL_PASSWORD": self.RABBITMQ_TOOL_PASSWORD,
             },
             detach=True,
-            auto_remove=True)
+            auto_remove=True,
+        )
 
         logs_rab = client.containers.get("ict_rab").logs(stream=True)
 
@@ -154,13 +156,23 @@ class Simulator:
         red_logs = client.containers.get("ict_red").logs(stream=True)
         rab_logs = client.containers.get("ict_rab").logs(stream=True)
 
-        logging.info("Redis DB container status: {}".format(client.containers.get("ict_red").status))
-        logging.info("RabbitMQ container status: {}".format(client.containers.get("ict_rab").status))
+        logging.info(
+            "Redis DB container status: {}".format(
+                client.containers.get("ict_red").status
+            )
+        )
+        logging.info(
+            "RabbitMQ container status: {}".format(
+                client.containers.get("ict_rab").status
+            )
+        )
 
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
     # TODO: test deploying multiple simulation (access to results DB and without shutting down RabbitMQ)
-    def deploy_orchestrator(self, simulation="demotest", client=None, server="server.py"):
+    def deploy_orchestrator(
+        self, simulation="demotest", client=None, server="server.py"
+    ):
         """
         Deploy and configure the OBNL (orchestration) container
 
@@ -175,29 +187,43 @@ class Simulator:
         obnl_folder = os.path.join(self.deploy.TMP_FOLDER, "obnl_folder")
         os.makedirs(obnl_folder)
 
-        with open(os.path.join(obnl_folder, self.SCE_JSON_FILE), 'w') as fp:
+        with open(os.path.join(obnl_folder, self.SCE_JSON_FILE), "w") as fp:
             json.dump(self.edit.interaction_graph, fp)
 
-        with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), 'w') as fp:
-            json.dump({"steps": self.steps, "schedule": self.sequence, "simulation_name": simulation}, fp)
+        with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), "w") as fp:
+            json.dump(
+                {
+                    "steps": self.steps,
+                    "schedule": self.sequence,
+                    "simulation_name": simulation,
+                },
+                fp,
+            )
 
-        with open(os.path.join(obnl_folder, self.deploy.CONFIG_FILE), 'w') as fp:
+        with open(os.path.join(obnl_folder, self.deploy.CONFIG_FILE), "w") as fp:
             json.dump(obnl_config, fp)
 
         shutil.copyfile(server, os.path.join(obnl_folder, "server.py"))
 
         logging.info("Running OBNL container ...")
         client.containers.run(
-            'integrcity/ict-obnl',
-            name='ict_orch',
-            volumes={os.path.abspath(obnl_folder): {'bind': "/home/project", 'mode': 'rw'}},
-            command='{} {} {}'.format(self.deploy.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
+            "integrcity/ict-obnl",
+            name="ict_orch",
+            volumes={
+                os.path.abspath(obnl_folder): {"bind": "/home/project", "mode": "rw"}
+            },
+            command="{} {} {}".format(
+                self.deploy.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE
+            ),
             detach=True,
-            auto_remove=True)
+            auto_remove=True,
+        )
 
-        logging.info("OBNL container status: {}".format(client.containers.get("ict_orch").status))
+        logging.info(
+            "OBNL container status: {}".format(client.containers.get("ict_orch").status)
+        )
 
-        return client.containers.get('ict_orch').logs(stream=True)
+        return client.containers.get("ict_orch").logs(stream=True)
 
     def deploy_nodes(self, client=None):
         """
@@ -213,17 +239,11 @@ class Simulator:
         for node_name, node in nodes.iterrows():
 
             node_folder = self.deploy.create_volume(
-                node_name,
-                node["init_values"],
-                node["wrapper"],
-                *node["files"]
+                node_name, node["init_values"], node["wrapper"], *node["files"]
             )
 
             logs[node_name] = self.deploy.deploy_node(
-                node_name=node_name,
-                node=node,
-                node_folder=node_folder,
-                client=client
+                node_name=node_name, node=node, node_folder=node_folder, client=client
             )
         return logs
 
@@ -237,7 +257,9 @@ class Simulator:
         :return: a dict containing the logs of RabbitMQ, Redis, OBNL and the simulation nodes
         """
         logs_aux = self.deploy_aux(client=client)
-        logs_orc = self.deploy_orchestrator(server=server, client=client, simulation=simulation)
+        logs_orc = self.deploy_orchestrator(
+            server=server, client=client, simulation=simulation
+        )
         logs_nodes = self.deploy_nodes(client=client)
         return {"aux": logs_aux, "orc": logs_orc, "nodes": logs_nodes}
 
@@ -254,7 +276,9 @@ class Simulator:
             logging.info("The group {} have been created.".format(nodes))
         except AssertionError:
             for get_node, set_node, _ in h.edges:
-                logging.warning("A direct link exists from {} to {} !".format(get_node, set_node))
+                logging.warning(
+                    "A direct link exists from {} to {} !".format(get_node, set_node)
+                )
         return nodes
 
     def create_sequence(self, *groups):

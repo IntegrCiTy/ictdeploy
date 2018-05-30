@@ -3,13 +3,14 @@ import pandas as pd
 import logging
 
 
-__all__ = ['GraphCreator']
+__all__ = ["GraphCreator"]
 
 
 class Node:
     """
     Class defined to store the node's data into the networkx.MultiDiGraph() structure
     """
+
     def __init__(self, name, model, init_values, is_first):
         self.name = name
 
@@ -25,6 +26,7 @@ class GraphCreator:
     """
     Class for gathering methods allowing the creation of a co-simulation graph
     """
+
     def __init__(self):
         self.meta_models = {}
         self.models = {}
@@ -40,16 +42,23 @@ class GraphCreator:
                 node: {
                     "meta": self.models[data["node"].model]["meta"],
                     "model": data["node"].model,
-                    "to_set": self.meta_models[self.models[data["node"].model]["meta"]]["set_attrs"],
-                    "to_get": self.meta_models[self.models[data["node"].model]["meta"]]["get_attrs"],
+                    "to_set": self.meta_models[self.models[data["node"].model]["meta"]][
+                        "set_attrs"
+                    ],
+                    "to_get": self.meta_models[self.models[data["node"].model]["meta"]][
+                        "get_attrs"
+                    ],
                     "image": self.models[data["node"].model]["image"],
                     "wrapper": self.models[data["node"].model]["wrapper"],
                     "files": self.models[data["node"].model]["files"],
                     "command": self.models[data["node"].model]["command"],
                     "init_values": data["node"].init_values,
-                    "is_first": data["node"].is_first
-                } for node, data in self.graph.nodes(data=True)
-            }, orient="index")
+                    "is_first": data["node"].is_first,
+                }
+                for node, data in self.graph.nodes(data=True)
+            },
+            orient="index",
+        )
 
     @property
     def links(self):
@@ -62,9 +71,11 @@ class GraphCreator:
                     "get_node": get_node,
                     "get_attr": data["link"]["get_attr"],
                     "set_node": set_node,
-                    "set_attr": data["link"]["set_attr"]
-                } for get_node, set_node, data in self.graph.edges(data=True)
-            ])
+                    "set_attr": data["link"]["set_attr"],
+                }
+                for get_node, set_node, data in self.graph.edges(data=True)
+            ]
+        )
 
     def add_meta(self, name, set_attrs=list(), get_attrs=list()):
         """
@@ -75,10 +86,7 @@ class GraphCreator:
         :param get_attrs: list of string, default: None
         :return:
         """
-        self.meta_models[name] = {
-            'set_attrs': set_attrs,
-            'get_attrs': get_attrs
-        }
+        self.meta_models[name] = {"set_attrs": set_attrs, "get_attrs": get_attrs}
         logging.info("Meta-model {} created.".format(name))
         return name
 
@@ -95,11 +103,11 @@ class GraphCreator:
         :return:
         """
         self.models[name] = {
-            'meta': meta,
-            'image': image,
-            'wrapper': wrapper,
-            'command': command,
-            'files': files
+            "meta": meta,
+            "image": image,
+            "wrapper": wrapper,
+            "command": command,
+            "files": files,
         }
         logging.info("Model {} created.".format(name))
         return name
@@ -132,9 +140,15 @@ class GraphCreator:
         :param unit: , default: "unit" (without unit)
         :return: nothing :)
         """
-        self.graph.add_edge(get_node, set_node, link={"get_attr": get_attr, "set_attr": set_attr, "unit": unit})
+        self.graph.add_edge(
+            get_node,
+            set_node,
+            link={"get_attr": get_attr, "set_attr": set_attr, "unit": unit},
+        )
 
-    def add_multiple_links_between_two_nodes(self, get_node, set_node, get_attrs, set_attrs, units=None):
+    def add_multiple_links_between_two_nodes(
+        self, get_node, set_node, get_attrs, set_attrs, units=None
+    ):
         """
         Create multiple links between two nodes, defining a list of attributes to get (outputs) and to set (inputs)
 
@@ -164,17 +178,15 @@ class GraphCreator:
         :return: a dict containing the information about the interaction between the nodes and the co-simulation graph
         """
         return {
-            "nodes": {node: {
-                "input": row["to_set"],
-                "output": row["to_get"]
-            } for node, row in self.nodes.iterrows()},
-
-            "links": [{
-                "output": {
-                    "node": link["get_node"],
-                    "attribute": link["get_attr"]},
-                "input": {
-                    "node": link["set_node"],
-                    "attribute": link["set_attr"]}
-            } for i, link in self.links.iterrows()]
+            "nodes": {
+                node: {"input": row["to_set"], "output": row["to_get"]}
+                for node, row in self.nodes.iterrows()
+            },
+            "links": [
+                {
+                    "output": {"node": link["get_node"], "attribute": link["get_attr"]},
+                    "input": {"node": link["set_node"], "attribute": link["set_attr"]},
+                }
+                for i, link in self.links.iterrows()
+            ],
         }
