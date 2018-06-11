@@ -6,13 +6,13 @@ from tests.fixtures_test import fix_create, fix_deploy
 
 def test_needed_files_are_in_the_obnl_folder(fix_deploy):
     sim, _, _, _ = fix_deploy
-    files = [
+    files = {
         "interaction_graph.json",
         "sequences_and_steps.json",
         "config_file.json",
         "server.py",
-    ]
-    assert os.listdir(os.path.join(sim.deploy.TMP_FOLDER, "obnl_folder")) == files
+    }
+    assert set(os.listdir(os.path.join(sim.deploy.TMP_FOLDER, "obnl_folder"))) == files
 
 
 def test_simulation_run_until_the_end(fix_deploy):
