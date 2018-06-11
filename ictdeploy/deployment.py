@@ -115,17 +115,24 @@ class SimNodesCreator:
         if node["command"]:
             full_command.append("--cmd={}".format(node["command"]))
 
-        # Run the container with the Docker API
-        client.containers.run(
-            image=node["image"],
-            name=node_name,
-            volumes={
-                os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}
-            },
-            command=full_command,
-            detach=True,
-            auto_remove=True,
-        )
-        logging.info("The node {} is deployed.".format(node_name))
+        if node["is_local"]:
+            logging.info("The node {} needs to be deployed manually.".format(node_name))
+            print("CMD (in {}): {}".format(node_folder, ' '.join(["python"] + full_command)))
+            return None
 
-        return client.containers.get(node_name).logs(stream=True)
+        else:
+            # Run the container with the Docker API
+            client.containers.run(
+                image=node["image"],
+                name=node_name,
+                volumes={
+                    os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}
+                },
+                command=full_command,
+                detach=True,
+                auto_remove=True,
+            )
+
+            logging.info("The node {} is deployed.".format(node_name))
+
+            return client.containers.get(node_name).logs(stream=True)

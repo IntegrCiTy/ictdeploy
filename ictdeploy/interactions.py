@@ -11,12 +11,13 @@ class Node:
     Class defined to store the node's data into the networkx.MultiDiGraph() structure
     """
 
-    def __init__(self, name, model, init_values, is_first):
+    def __init__(self, name, model, init_values, is_first, is_local):
         self.name = name
 
         self.model = model
         self.init_values = init_values
         self.is_first = is_first
+        self.is_local = is_local
 
     def __repr__(self):
         return str(self.model) + " -> " + str(self.init_values)
@@ -54,6 +55,7 @@ class GraphCreator:
                     "command": self.models[data["node"].model]["command"],
                     "init_values": data["node"].init_values,
                     "is_first": data["node"].is_first,
+                    "is_local": data["node"].is_local,
                 }
                 for node, data in self.graph.nodes(data=True)
             },
@@ -112,7 +114,7 @@ class GraphCreator:
         logging.info("Model {} created.".format(name))
         return name
 
-    def add_node(self, name, model, init_values=None, is_first=False):
+    def add_node(self, name, model, init_values=None, is_first=False, is_local=False):
         """
         Create a node based on the corresponding model
 
@@ -120,11 +122,12 @@ class GraphCreator:
         :param model: name of the corresponding model
         :param init_values: a dict mapping the initial values to the model's parameters, default: None
         :param is_first: set to True if the node is in the first group of the simulation sequence, default: False
+        :param is_local: set to True if the node will not be run automatically  but manually, default: False
         :return: the node's name
         """
         if init_values is None:
             init_values = {}
-        node = Node(name, model, init_values, is_first)
+        node = Node(name, model, init_values, is_first, is_local)
         self.graph.add_node(node.name, node=node)
         logging.info("Node {} created.".format(name))
         return node.name
