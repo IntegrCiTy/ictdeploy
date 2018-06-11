@@ -1,0 +1,4 @@
+pytest
+-e git://github.com/IntegrCiTy/obnl.git@feature/connection-util#egg=obnl
+-e git://github.com/IntegrCiTy/connection-util#egg=connection-util >= 0.3.0
+-e git://github.com/IntegrCiTy/messaging#egg=ict-messaging&subdirectory=python >= 0.9.0
