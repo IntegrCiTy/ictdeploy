@@ -1,5 +1,6 @@
 import os
 import pytest
+import subprocess
 
 from tests.common import clean_tmp_folder, clean_containers, get_logs
 from ictdeploy import Simulator as Sim
@@ -45,14 +46,20 @@ def fix_local():
     sim.create_steps([60] * 10)
 
     sim.deploy_aux()
-    sim.deploy_orchestrator(server=os.path.join("tests", "server.py"))
+    orch = sim.deploy_orchestrator(server=os.path.join("tests", "server.py"))
 
-    return sim.deploy_nodes()
+    return orch, sim.deploy_nodes()
 
 
 def test_local_not_deployed(fix_local):
-    logs = fix_local
-    assert logs["Base1"] is None
+    _, logs = fix_local
+    assert logs["Base1"] == "python base_wrap.py 172.17.01 Base1 init_values.json --i=a --o=b"
+
+
+# def test_run_subprocess(fix_local):
+#     logs_orc, logs = fix_local
+#     subprocess.Popen("python TMP_FOLDER/Base1/base_wrap.py 172.17.01 Base1 init_values.json --i=a --o=b")
+#     assert len([l for l in get_logs(logs_orc) if "Simulation finished." in l]) == 1
 
 
 def teardown_function():

@@ -116,9 +116,8 @@ class SimNodesCreator:
             full_command.append("--cmd={}".format(node["command"]))
 
         if node["is_local"]:
-            logging.info("The node {} needs to be deployed manually.".format(node_name))
-            print("CMD (in {}): {}".format(node_folder, ' '.join(["python"] + full_command)))
-            return None
+            logging.info("The node {} needs to be deployed manually in the temporary node folder.".format(node_name))
+            return ' '.join(["python"] + full_command)
 
         else:
             # Run the container with the Docker API
