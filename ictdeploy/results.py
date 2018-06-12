@@ -11,7 +11,7 @@ class SimResultsGetter:
     def __init__(self):
         self.redis = None
 
-    def connect_to_results_db(self, db=0, host="172.17.01", port=6379):
+    def connect_to_results_db(self, db=0, host="localhost", port=6379):
         """
         Instantiate connection with Redis DB
 
