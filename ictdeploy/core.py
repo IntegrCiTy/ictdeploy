@@ -1,7 +1,7 @@
 import os
 import json
 import shutil
-import logging  # TODO: set up a correct logger
+from ictdeploy.logs import logger
 
 from ictdeploy.deployment import SimNodesCreator
 from ictdeploy.interactions import GraphCreator
@@ -120,16 +120,10 @@ class Simulator:
 
         self._clean_all(client)
 
-        logging.info("Running Redis DB container ...")
-        client.containers.run(
-            "redis:alpine",
-            name="ict_red",
-            ports={"6379/tcp": 6379},
-            detach=True,
-            auto_remove=True,
-        )
+        logger.info("Running Redis DB container ...")
+        client.containers.run("redis:alpine", name="ict_red", ports={"6379/tcp": 6379}, detach=True, auto_remove=True)
 
-        logging.info("Running RabbitMQ container ...")
+        logger.info("Running RabbitMQ container ...")
         client.containers.run(
             "integrcity/ict-rabbitmq",
             name="ict_rab",
@@ -156,23 +150,13 @@ class Simulator:
         red_logs = client.containers.get("ict_red").logs(stream=True)
         rab_logs = client.containers.get("ict_rab").logs(stream=True)
 
-        logging.info(
-            "Redis DB container status: {}".format(
-                client.containers.get("ict_red").status
-            )
-        )
-        logging.info(
-            "RabbitMQ container status: {}".format(
-                client.containers.get("ict_rab").status
-            )
-        )
+        logger.info("Redis DB container status: {}".format(client.containers.get("ict_red").status))
+        logger.info("RabbitMQ container status: {}".format(client.containers.get("ict_rab").status))
 
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
     # TODO: test deploying multiple simulation (access to results DB and without shutting down RabbitMQ)
-    def deploy_orchestrator(
-        self, simulation="demotest", client=None, server="server.py"
-    ):
+    def deploy_orchestrator(self, simulation="demotest", client=None, server="server.py"):
         """
         Deploy and configure the OBNL (orchestration) container
 
@@ -191,37 +175,24 @@ class Simulator:
             json.dump(self.edit.interaction_graph, fp)
 
         with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), "w") as fp:
-            json.dump(
-                {
-                    "steps": self.steps,
-                    "schedule": self.sequence,
-                    "simulation_name": simulation,
-                },
-                fp,
-            )
+            json.dump({"steps": self.steps, "schedule": self.sequence, "simulation_name": simulation}, fp)
 
         with open(os.path.join(obnl_folder, self.deploy.CONFIG_FILE), "w") as fp:
             json.dump(obnl_config, fp)
 
         shutil.copyfile(server, os.path.join(obnl_folder, "server.py"))
 
-        logging.info("Running OBNL container ...")
+        logger.info("Running OBNL container ...")
         client.containers.run(
             "integrcity/ict-obnl",
             name="ict_orch",
-            volumes={
-                os.path.abspath(obnl_folder): {"bind": "/home/project", "mode": "rw"}
-            },
-            command="{} {} {}".format(
-                self.deploy.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE
-            ),
+            volumes={os.path.abspath(obnl_folder): {"bind": "/home/project", "mode": "rw"}},
+            command="{} {} {}".format(self.deploy.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
             detach=True,
             auto_remove=True,
         )
 
-        logging.info(
-            "OBNL container status: {}".format(client.containers.get("ict_orch").status)
-        )
+        logger.info("OBNL container status: {}".format(client.containers.get("ict_orch").status))
 
         return client.containers.get("ict_orch").logs(stream=True)
 
@@ -238,13 +209,12 @@ class Simulator:
 
         for node_name, node in nodes.iterrows():
 
-            node_folder = self.deploy.create_volume(
-                node_name, node["init_values"], node["wrapper"], *node["files"]
-            )
+            node_folder = self.deploy.create_volume(node_name, node["init_values"], node["wrapper"], *node["files"])
 
             logs[node_name] = self.deploy.deploy_node(
                 node_name=node_name, node=node, node_folder=node_folder, client=client
             )
+        logger.debug("All nodes have been deployed.")
         return logs
 
     def run_simulation(self, server, simulation="demotest", client=None):
@@ -257,10 +227,9 @@ class Simulator:
         :return: a dict containing the logs of RabbitMQ, Redis, OBNL and the simulation nodes
         """
         logs_aux = self.deploy_aux(client=client)
-        logs_orc = self.deploy_orchestrator(
-            server=server, client=client, simulation=simulation
-        )
+        logs_orc = self.deploy_orchestrator(server=server, client=client, simulation=simulation)
         logs_nodes = self.deploy_nodes(client=client)
+        logger.debug("Simulation started")
         return {"aux": logs_aux, "orc": logs_orc, "nodes": logs_nodes}
 
     def create_group(self, *nodes):
@@ -273,12 +242,10 @@ class Simulator:
         h = self.edit.graph.subgraph(nodes)
         try:
             assert len(h.edges) == 0
-            logging.info("The group {} have been created.".format(nodes))
+            logger.info("The group {} have been created.".format(nodes))
         except AssertionError:
             for get_node, set_node, _ in h.edges:
-                logging.warning(
-                    "A direct link exists from {} to {} !".format(get_node, set_node)
-                )
+                logger.warning("A direct link exists from {} to {} !".format(get_node, set_node))
         return nodes
 
     def create_sequence(self, *groups):
@@ -289,7 +256,7 @@ class Simulator:
         :return: nothing :)
         """
         self.sequence = [g for g in groups]
-        logging.info("The sequence {} have been created.".format(self.sequence))
+        logger.info("The sequence {} have been created.".format(self.sequence))
 
     def create_steps(self, steps, unit="seconds"):
         """
@@ -301,7 +268,7 @@ class Simulator:
         """
         steps = np.array(steps) * self.UNITS[unit]
         self.steps = steps.tolist()
-        logging.info("{} steps have been created.".format(len(steps)))
+        logger.info("{} steps have been created.".format(len(steps)))
 
     @staticmethod
     def get_logs(logs):

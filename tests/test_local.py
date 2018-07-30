@@ -23,18 +23,12 @@ def fix_local():
         image="integrcity/ict-simple",
         wrapper=os.path.join("tests", "wrappers", "base_wrap.py"),
         command=None,
-        files=[
-            os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")
-        ],
+        files=[os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")],
     )
 
-    sim.edit.add_node(
-        name="Base0", model="BaseModel", init_values={"c": 0.5}, is_first=True
-    )
+    sim.edit.add_node(name="Base0", model="BaseModel", init_values={"c": 0.5}, is_first=True)
 
-    sim.edit.add_node(
-        name="Base1", model="BaseModel", init_values={"c": 0.25}, is_local=True
-    )
+    sim.edit.add_node(name="Base1", model="BaseModel", init_values={"c": 0.25}, is_local=True)
 
     sim.edit.add_link(get_node="Base0", get_attr="b", set_node="Base1", set_attr="a")
     sim.edit.add_link(get_node="Base1", get_attr="b", set_node="Base0", set_attr="a")

@@ -26,12 +26,7 @@ def f():
         files=[],
     )
 
-    sim.edit.add_node(
-        name="HP_0",
-        model="fmuHP",
-        is_first=True,
-        init_values={"p_nom": 100, "mode": "heating"},
-    )
+    sim.edit.add_node(name="HP_0", model="fmuHP", is_first=True, init_values={"p_nom": 100, "mode": "heating"})
 
     return sim
 

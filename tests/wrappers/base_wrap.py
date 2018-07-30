@@ -31,9 +31,7 @@ class Node(ClientNode):
     Node class for the wrapper (model can be called by the container or can be self contained directly in the wrapper)
     """
 
-    def __init__(
-        self, host, input_attributes=None, output_attributes=None, is_first=False
-    ):
+    def __init__(self, host, input_attributes=None, output_attributes=None, is_first=False):
         # Implement OBNL client node
         super(Node, self).__init__(
             host,
@@ -85,11 +83,7 @@ class Node(ClientNode):
         self.b = self.a + self.c
 
         # Send updated output attributes
-        logging.debug(
-            self.name,
-            "outputs",
-            {key: getattr(self, key) for key in self.output_attributes},
-        )
+        logging.debug(self.name, "outputs", {key: getattr(self, key) for key in self.output_attributes})
         for key in self.output_attributes:
             self.update_attribute(key, getattr(self, key))
 
@@ -103,10 +97,7 @@ if __name__ == "__main__":
     args = docopt(doc, version="0.0.1")
 
     node = Node(
-        host=args["<host>"],
-        is_first=args["--first"],
-        input_attributes=args["--i"],
-        output_attributes=args["--o"],
+        host=args["<host>"], is_first=args["--first"], input_attributes=args["--i"], output_attributes=args["--o"]
     )
 
     node.start()

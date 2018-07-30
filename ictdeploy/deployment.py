@@ -2,9 +2,9 @@ import docker
 import json
 import os
 import shutil
-import logging
 
 from ictdeploy.base_config import base_config
+from ictdeploy.logs import logger
 
 
 class SimNodesCreator:
@@ -45,6 +45,8 @@ class SimNodesCreator:
         with open(init_json, "w") as outfile:
             json.dump(init_values, outfile)
 
+        logger.debug("Init values file created in {}".format(node_folder))
+
     def _create_config_file(self, node_name, node_folder):
         """
         Create the configuration file necessary for the RabbitMQ communication and the Protobuf protocol
@@ -59,6 +61,8 @@ class SimNodesCreator:
         config_json = os.path.join(node_folder, self.CONFIG_FILE)
         with open(config_json, "w") as outfile:
             json.dump(node_config, outfile)
+
+        logger.debug("Configuration file created in for {} in {}".format(node_name, node_folder))
 
     def create_volume(self, node_name, init_values, *files):
         """
@@ -77,6 +81,8 @@ class SimNodesCreator:
 
         self._create_init_values_file(node_folder, init_values)
         self._create_config_file(node_name, node_folder)
+
+        logger.debug("Volume created for {} in {}".format(node_name, node_folder))
 
         return node_folder
 
@@ -116,22 +122,20 @@ class SimNodesCreator:
             full_command.append("--cmd={}".format(node["command"]))
 
         if node["is_local"]:
-            logging.info("The node {} needs to be deployed manually in the temporary node folder.".format(node_name))
-            return ' '.join(["python"] + full_command)
+            logger.info("The node {} needs to be deployed manually in the temporary node folder.".format(node_name))
+            return " ".join(["python"] + full_command)
 
         else:
             # Run the container with the Docker API
             client.containers.run(
                 image=node["image"],
                 name=node_name,
-                volumes={
-                    os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}
-                },
+                volumes={os.path.abspath(node_folder): {"bind": "/home/project", "mode": "rw"}},
                 command=full_command,
                 detach=True,
                 auto_remove=True,
             )
 
-            logging.info("The node {} is deployed.".format(node_name))
+            logger.info("The node {} is deployed.".format(node_name))
 
             return client.containers.get(node_name).logs(stream=True)

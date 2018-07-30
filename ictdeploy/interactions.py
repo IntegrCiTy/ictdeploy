@@ -1,6 +1,7 @@
 import networkx as nx
 import pandas as pd
-import logging
+
+from ictdeploy.logs import logger
 
 
 __all__ = ["GraphCreator"]
@@ -33,6 +34,8 @@ class GraphCreator:
         self.models = {}
         self.graph = nx.MultiDiGraph()
 
+        logger.debug("GraphCreator initialized")
+
     @property
     def nodes(self):
         """
@@ -43,12 +46,8 @@ class GraphCreator:
                 node: {
                     "meta": self.models[data["node"].model]["meta"],
                     "model": data["node"].model,
-                    "to_set": self.meta_models[self.models[data["node"].model]["meta"]][
-                        "set_attrs"
-                    ],
-                    "to_get": self.meta_models[self.models[data["node"].model]["meta"]][
-                        "get_attrs"
-                    ],
+                    "to_set": self.meta_models[self.models[data["node"].model]["meta"]]["set_attrs"],
+                    "to_get": self.meta_models[self.models[data["node"].model]["meta"]]["get_attrs"],
                     "image": self.models[data["node"].model]["image"],
                     "wrapper": self.models[data["node"].model]["wrapper"],
                     "files": self.models[data["node"].model]["files"],
@@ -89,7 +88,7 @@ class GraphCreator:
         :return:
         """
         self.meta_models[name] = {"set_attrs": set_attrs, "get_attrs": get_attrs}
-        logging.info("Meta-model {} created.".format(name))
+        logger.info("Meta-model {} created.".format(name))
         return name
 
     def add_model(self, name, meta, image, wrapper, command, files):
@@ -104,14 +103,8 @@ class GraphCreator:
         :param files: optional files to add into the model's container
         :return:
         """
-        self.models[name] = {
-            "meta": meta,
-            "image": image,
-            "wrapper": wrapper,
-            "command": command,
-            "files": files,
-        }
-        logging.info("Model {} created.".format(name))
+        self.models[name] = {"meta": meta, "image": image, "wrapper": wrapper, "command": command, "files": files}
+        logger.info("Model {} created.".format(name))
         return name
 
     def add_node(self, name, model, init_values=None, is_first=False, is_local=False):
@@ -129,7 +122,7 @@ class GraphCreator:
             init_values = {}
         node = Node(name, model, init_values, is_first, is_local)
         self.graph.add_node(node.name, node=node)
-        logging.info("Node {} created.".format(name))
+        logger.info("Node {} created.".format(name))
         return node.name
 
     def add_link(self, get_node, set_node, get_attr, set_attr, unit="unit"):
@@ -143,15 +136,10 @@ class GraphCreator:
         :param unit: , default: "unit" (without unit)
         :return: nothing :)
         """
-        self.graph.add_edge(
-            get_node,
-            set_node,
-            link={"get_attr": get_attr, "set_attr": set_attr, "unit": unit},
-        )
+        self.graph.add_edge(get_node, set_node, link={"get_attr": get_attr, "set_attr": set_attr, "unit": unit})
+        logger.info("Link created {} -> {}.".format(get_node, set_node))
 
-    def add_multiple_links_between_two_nodes(
-        self, get_node, set_node, get_attrs, set_attrs, units=None
-    ):
+    def add_multiple_links_between_two_nodes(self, get_node, set_node, get_attrs, set_attrs, units=None):
         """
         Create multiple links between two nodes, defining a list of attributes to get (outputs) and to set (inputs)
 
@@ -174,6 +162,7 @@ class GraphCreator:
         :return: nothing :)
         """
         self.graph = nx.MultiDiGraph()
+        logger.info("Reset graph")
 
     @property
     def interaction_graph(self):
@@ -181,10 +170,7 @@ class GraphCreator:
         :return: a dict containing the information about the interaction between the nodes and the co-simulation graph
         """
         return {
-            "nodes": {
-                node: {"input": row["to_set"], "output": row["to_get"]}
-                for node, row in self.nodes.iterrows()
-            },
+            "nodes": {node: {"input": row["to_set"], "output": row["to_get"]} for node, row in self.nodes.iterrows()},
             "links": [
                 {
                     "output": {"node": link["get_node"], "attribute": link["get_attr"]},

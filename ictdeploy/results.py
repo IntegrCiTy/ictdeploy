@@ -29,9 +29,7 @@ class SimResultsGetter:
         :return: a pandas.DataFrame() describing the available results by nodes
         """
         keys = [k.decode("utf-8") for k in self.redis.keys() if "time" not in str(k)]
-        return pd.DataFrame(
-            [k.split("||") for k in keys], columns=["IN/OUT", "Node", "Attribute"]
-        )
+        return pd.DataFrame([k.split("||") for k in keys], columns=["IN/OUT", "Node", "Attribute"])
 
     def get_results_by_pattern(self, pattern, origin="2015-01-01"):
         """

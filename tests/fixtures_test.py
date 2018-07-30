@@ -20,14 +20,10 @@ def fix_create():
         image="integrcity/ict-simple",
         wrapper=os.path.join("tests", "wrappers", "base_wrap.py"),
         command=None,
-        files=[
-            os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")
-        ],
+        files=[os.path.join("tests", "files_to_add", "empty_file_for_testing_purpose.txt")],
     )
 
-    sim.edit.add_node(
-        name="Base0", model="BaseModel", init_values={"c": 0.5}, is_first=True
-    )
+    sim.edit.add_node(name="Base0", model="BaseModel", init_values={"c": 0.5}, is_first=True)
 
     sim.edit.add_node(name="Base1", model="BaseModel", init_values={"c": 0.25})
 
@@ -53,9 +49,7 @@ def fix_volume():
     sim = fix_create()
 
     for node_name, node in sim.edit.nodes.iterrows():
-        sim.deploy.create_volume(
-            node_name, node["init_values"], node["wrapper"], *node["files"]
-        )
+        sim.deploy.create_volume(node_name, node["init_values"], node["wrapper"], *node["files"])
 
     return sim
 
