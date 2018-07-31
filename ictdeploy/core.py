@@ -156,13 +156,12 @@ class Simulator:
         return {"ict-red": red_logs, "ict-rab": rab_logs}
 
     # TODO: test deploying multiple simulation (access to results DB and without shutting down RabbitMQ)
-    def deploy_orchestrator(self, simulation="demotest", client=None, server="server.py"):
+    def deploy_orchestrator(self, simulation="demotest", client=None):
         """
         Deploy and configure the OBNL (orchestration) container
 
-        :param server: python script that run OBNL
         :param client: Docker client (default: from local environment)
-        :param simulation:
+        :param simulation: Simulation name
         :return: logs of the OBNL container as generator
         """
         if client is None:
@@ -180,11 +179,14 @@ class Simulator:
         with open(os.path.join(obnl_folder, self.deploy.CONFIG_FILE), "w") as fp:
             json.dump(obnl_config, fp)
 
-        shutil.copyfile(server, os.path.join(obnl_folder, "server.py"))
+        # TODO Add server.py directly into docker image
+        # TODO remove tho following line
+        shutil.copyfile("tests/server.py", os.path.join(obnl_folder, "server.py"))
 
         logger.info("Running OBNL container ...")
         client.containers.run(
-            "integrcity/ict-obnl",
+            # "integrcity/ict-obnl",
+            "ict-obnl:develop",
             name="ict_orch",
             volumes={os.path.abspath(obnl_folder): {"bind": "/home/project", "mode": "rw"}},
             command="{} {} {}".format(self.deploy.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
@@ -217,17 +219,16 @@ class Simulator:
         logger.debug("All nodes have been deployed.")
         return logs
 
-    def run_simulation(self, server, simulation="demotest", client=None):
+    def run_simulation(self, simulation="demotest", client=None):
         """
         Run the simulation, deploying RabbitMQ, Redis, OBNL and the simulation nodes
 
         :param simulation: name of the current simulation
-        :param server: link to the file that will be running OBNL
         :param client: Docker client (default: from local environment)
         :return: a dict containing the logs of RabbitMQ, Redis, OBNL and the simulation nodes
         """
         logs_aux = self.deploy_aux(client=client)
-        logs_orc = self.deploy_orchestrator(server=server, client=client, simulation=simulation)
+        logs_orc = self.deploy_orchestrator(client=client, simulation=simulation)
         logs_nodes = self.deploy_nodes(client=client)
         logger.debug("Simulation started")
         return {"aux": logs_aux, "orc": logs_orc, "nodes": logs_nodes}

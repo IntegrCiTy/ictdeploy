@@ -40,7 +40,7 @@ def fix_local():
     sim.create_steps([60] * 10)
 
     sim.deploy_aux()
-    orch = sim.deploy_orchestrator(server=os.path.join("tests", "server.py"))
+    orch = sim.deploy_orchestrator()
 
     return orch, sim.deploy_nodes()
 
