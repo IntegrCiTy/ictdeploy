@@ -11,6 +11,10 @@ from ictdeploy.base_config import obnl_config
 import numpy as np
 
 
+# https://github.com/moby/moby/issues/15936
+# https://stackoverflow.com/questions/47664107/docker-mount-to-folder-overriding-content
+# https://forums.docker.com/t/mounting-a-data-volume-without-overwriting-the-container-directory/3916/2
+
 class Simulator:
 
     """
@@ -64,10 +68,10 @@ class Simulator:
     """
 
     SCE_JSON_FILE = "interaction_graph.json"
-    """Default value for interaction graph json file used by OBNL"""
+    """Default value for interaction graph json file name used by OBNL"""
 
     RUN_JSON_FILE = "sequences_and_steps.json"
-    """Default value for sequences and steps json file used by OBNL"""
+    """Default value for sequences and steps json file name used by OBNL"""
 
     UNITS = {"seconds": 1, "minutes": 60, "hours": 3600}
     """Dict used for time units conversion"""
@@ -80,6 +84,9 @@ class Simulator:
 
     RABBITMQ_TOOL_PASSWORD = "tool"
     """Tool password for RabbitMQ"""
+
+    # OBNL_DOCKER_IMAGE = "integrcity/ict-obnl:latest"
+    OBNL_DOCKER_IMAGE = "ict-obnl:develop"
 
     def __init__(self):
         super().__init__()
@@ -100,12 +107,15 @@ class Simulator:
         """
         if os.path.isdir(self.deploy.TMP_FOLDER):
             shutil.rmtree(self.deploy.TMP_FOLDER)
+            logger.debug("Delete {}".format(self.deploy.TMP_FOLDER))
 
         client.containers.prune()
+        logger.debug("Prune containers")
 
         for container in client.containers.list():
             if "ict" in container.name:
                 container.kill()
+                logger.debug("Kill container {}".format(container.name))
 
     def deploy_aux(self, client=None):
         """
@@ -117,6 +127,7 @@ class Simulator:
 
         if client is None:
             client = self.deploy.CLIENT
+            logger.debug("Set docker client to default value for Redis and RabbitMQ")
 
         self._clean_all(client)
 
@@ -125,7 +136,7 @@ class Simulator:
 
         logger.info("Running RabbitMQ container ...")
         client.containers.run(
-            "integrcity/ict-rabbitmq",
+            image="integrcity/ict-rabbitmq",
             name="ict_rab",
             ports={"5672/tcp": 5672},
             environment={
@@ -145,7 +156,10 @@ class Simulator:
             try:
                 x = logs_rab.__next__().decode("utf-8").rstrip()
             except StopIteration:
+                logger.error("Error in RabbitMQ container setup")
                 break
+
+        logger.debug("Setup completed for RabbitMQ container")
 
         red_logs = client.containers.get("ict_red").logs(stream=True)
         rab_logs = client.containers.get("ict_rab").logs(stream=True)
@@ -166,27 +180,30 @@ class Simulator:
         """
         if client is None:
             client = self.deploy.CLIENT
+            logger.debug("Set docker client to default value for orchestrator")
 
         obnl_folder = os.path.join(self.deploy.TMP_FOLDER, "obnl_folder")
         os.makedirs(obnl_folder)
+        logger.debug("Orchestrator folder {} created".format(obnl_folder))
 
         with open(os.path.join(obnl_folder, self.SCE_JSON_FILE), "w") as fp:
             json.dump(self.edit.interaction_graph, fp)
+            logger.debug("Scenario (interaction graph) dumped in {}".format(fp.name))
 
         with open(os.path.join(obnl_folder, self.RUN_JSON_FILE), "w") as fp:
             json.dump({"steps": self.steps, "schedule": self.sequence, "simulation_name": simulation}, fp)
+            logger.debug("Scenario (steps and sequence) dumped in {}".format(fp.name))
 
         with open(os.path.join(obnl_folder, self.deploy.CONFIG_FILE), "w") as fp:
             json.dump(obnl_config, fp)
+            logger.debug("Orchestrator Protobuf configuration dumped in {}".format(fp.name))
 
-        # TODO Add server.py directly into docker image
         # TODO remove tho following line
-        shutil.copyfile("tests/server.py", os.path.join(obnl_folder, "server.py"))
+        # shutil.copyfile("tests/server.py", os.path.join(obnl_folder, "server.py"))
 
         logger.info("Running OBNL container ...")
         client.containers.run(
-            # "integrcity/ict-obnl",
-            "ict-obnl:develop",
+            image=self.OBNL_DOCKER_IMAGE,
             name="ict_orch",
             volumes={os.path.abspath(obnl_folder): {"bind": "/home/project", "mode": "rw"}},
             command="{} {} {}".format(self.deploy.HOST, self.SCE_JSON_FILE, self.RUN_JSON_FILE),
@@ -212,11 +229,14 @@ class Simulator:
         for node_name, node in nodes.iterrows():
 
             node_folder = self.deploy.create_volume(node_name, node["init_values"], node["wrapper"], *node["files"])
+            logger.debug("Folder {} have been created for node {}".format(node_folder, node_name))
 
             logs[node_name] = self.deploy.deploy_node(
                 node_name=node_name, node=node, node_folder=node_folder, client=client
             )
-        logger.debug("All nodes have been deployed.")
+            logger.debug("Node {} has been deployed".format(node_name))
+
+        logger.info("All nodes (running in Docker) have been deployed.")
         return logs
 
     def run_simulation(self, simulation="demotest", client=None):
@@ -228,9 +248,11 @@ class Simulator:
         :return: a dict containing the logs of RabbitMQ, Redis, OBNL and the simulation nodes
         """
         logs_aux = self.deploy_aux(client=client)
+        logger.debug("RabbitMQ and Redis have been deployed")
         logs_orc = self.deploy_orchestrator(client=client, simulation=simulation)
+        logger.debug("OBNL has been deployed")
         logs_nodes = self.deploy_nodes(client=client)
-        logger.debug("Simulation started")
+        logger.debug("All nodes (running in Docker) have been deployed.")
         return {"aux": logs_aux, "orc": logs_orc, "nodes": logs_nodes}
 
     def create_group(self, *nodes):
@@ -284,5 +306,6 @@ class Simulator:
             try:
                 outputs.append(logs.__next__().decode("utf-8").rstrip())
             except StopIteration:
+                logger.debug("Iteration stopped in logs with len(logs) = {}".format(len(outputs)))
                 break
         return outputs

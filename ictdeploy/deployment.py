@@ -44,6 +44,7 @@ class SimNodesCreator:
         init_json = os.path.join(node_folder, self.INIT_VALUES_FILE)
         with open(init_json, "w") as outfile:
             json.dump(init_values, outfile)
+            logger.debug("Init values file dumped in {}".format(outfile.name))
 
         logger.debug("Init values file created in {}".format(node_folder))
 
@@ -61,6 +62,7 @@ class SimNodesCreator:
         config_json = os.path.join(node_folder, self.CONFIG_FILE)
         with open(config_json, "w") as outfile:
             json.dump(node_config, outfile)
+            logger.debug("Configuration file dumped in {}".format(outfile.name))
 
         logger.debug("Configuration file created in for {} in {}".format(node_name, node_folder))
 
@@ -75,12 +77,16 @@ class SimNodesCreator:
         """
         node_folder = os.path.join(self.TMP_FOLDER, node_name)
         os.makedirs(node_folder)
+        logger.debug("Node {} folder {} created".format(node_name, node_folder))
 
         for file in files:
             shutil.copyfile(file, os.path.join(node_folder, os.path.basename(file)))
+            logger.debug("File {} added in folder {}".format(file, node_folder))
 
         self._create_init_values_file(node_folder, init_values)
+        logger.debug("Init values file created in {}".format(node_folder))
         self._create_config_file(node_name, node_folder)
+        logger.debug("Configuration file created in {}".format(node_folder))
 
         logger.debug("Volume created for {} in {}".format(node_name, node_folder))
 

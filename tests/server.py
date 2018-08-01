@@ -8,13 +8,13 @@ from obnl.core.impl.logs import logger
 doc = """>>> IntegrCiTy obnl command <<<
 
 Usage:
-	server.py (<host> <graph> <schedule>)
-	server.py -h | --help
-	server.py --version
+    server.py (<host> <graph> <schedule>)
+    server.py -h | --help
+    server.py --version
 
 Options
-	-h --help   show this
-	--version   show version
+    -h --help   show this
+    --version   show version
 
 """
 

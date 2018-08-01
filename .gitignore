@@ -8,3 +8,4 @@ try*
 dist
 .pytest_cache
 *.log
+TMP_FOLDER
