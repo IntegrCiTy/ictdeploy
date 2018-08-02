@@ -253,6 +253,7 @@ class Simulator:
         logger.debug("OBNL has been deployed")
         logs_nodes = self.deploy_nodes(client=client)
         logger.debug("All nodes (running in Docker) have been deployed.")
+        # TODO: wait for simulation start to continue
         return {"aux": logs_aux, "orc": logs_orc, "nodes": logs_nodes}
 
     def create_group(self, *nodes):

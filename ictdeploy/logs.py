@@ -5,10 +5,12 @@ import logging
 
 from logging.handlers import RotatingFileHandler
 
-logger = logging.getLogger()
+logger = logging.getLogger("ICT-DEPLOY")
 logger.setLevel(logging.DEBUG)
 
-file_formatter = logging.Formatter("%(asctime)s :: %(levelname)s :: %(filename)s :: %(funcName)s :: %(message)s")
+file_formatter = logging.Formatter(
+    "%(asctime)s :: %(levelname)s :: %(name)s -> %(filename)s :: %(funcName)s :: %(message)s"
+)
 
 file_handler = RotatingFileHandler("deployment.log", "w")
 
